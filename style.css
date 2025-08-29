@@ -1,0 +1,78 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+html {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  position: relative;
+  width: 400px;   /* ajuste conforme o tamanho real do seu disco */
+  height: 400px;
+  margin: auto;
+}
+
+.background {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.disc {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 300px; /* ajuste para o tamanho do disco */
+  border-radius: 50%;
+}
+
+.icon-btn {
+  position: absolute;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.icon-btn img {
+  width: 40px;  /* ajuste conforme o tamanho desejado */
+  height: 40px;
+}
+
+/* Norte */
+.norte {
+  top: calc(50% - 180px); /* distância do centro para cima */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Sul */
+.sul {
+  top: calc(50% + 180px); /* distância do centro para baixo */
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Leste */
+.leste {
+  left: calc(50% + 180px); /* distância do centro para direita */
+  top: 50%;
+  transform: translateY(-50%);
+}
+
+/* Oeste */
+.oeste {
+  left: calc(50% - 180px); /* distância do centro para esquerda */
+  top: 50%;
+  transform: translateY(-50%);
+}
