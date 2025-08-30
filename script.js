@@ -8,10 +8,10 @@ let velocity = 0;
 let lastAngle = 0;
 const autoSpinSpeed = 0.3;
 let activeButton = null; // botão atualmente destacado
+let locked = false;      // trava o disco na "agarradinha"
+let lockTimeout = null;  // controla o tempo de travamento
 
-// --- Utils ---
 function normalize180(a) {
-  // normaliza para o intervalo [-180, 180)
   let ang = ((a + 180) % 360 + 360) % 360 - 180;
   return ang;
 }
@@ -23,83 +23,87 @@ function getAngle(x, y) {
   return Math.atan2(y - cy, x - cx) * (180 / Math.PI);
 }
 
-function getButtonAngle(btn) {
-  const rect = disc.getBoundingClientRect();
-  const cx = rect.left + rect.width / 2;
-  const cy = rect.top + rect.height / 2;
-
-  const btnRect = btn.getBoundingClientRect();
-  const bx = btnRect.left + btnRect.width / 2;
-  const by = btnRect.top + btnRect.height / 2;
-
-  let ang = Math.atan2(by - cy, bx - cx) * (180 / Math.PI);
-
-  // Correções manuais
-  if (btn.classList.contains("oeste")) ang -= 5;     // exemplo
-  if (btn.classList.contains("sudoeste")) ang += 8;  // exemplo
-
-  return ang;
-}
-
 function spin() {
-  // Gira o disco (arrastando ou no automático)
-  if (isDragging) {
-    currentRotation += velocity;
-  } else {
-    if (Math.abs(velocity) > autoSpinSpeed) {
-      velocity *= 0.95;
+  // Gira o disco
+  if (!locked) {
+    if (isDragging) {
       currentRotation += velocity;
     } else {
-      velocity = 0;
-      currentRotation += autoSpinSpeed;
+      if (Math.abs(velocity) > autoSpinSpeed) {
+        velocity *= 0.95;
+        currentRotation += velocity;
+      } else {
+        velocity = 0;
+        currentRotation += autoSpinSpeed;
+      }
     }
   }
 
   // Aplica a rotação ao disco
   disc.style.transform = `translate(-50%, -50%) rotate(${currentRotation}deg)`;
 
-  // --- Posição visual da seta ---
+  // --- Posição da seta ---
   const radius = disc.offsetWidth / 2;
   const arrowH = seta.offsetHeight || 40;
   const margem = 6;
   const r = radius - arrowH / 2 - margem;
 
-  // Offset apenas visual (se precisar ajustar a arte da imagem)
-  const ANG_FIX_VISUAL = 0;
-
   seta.style.transform = `
     translate(-50%, -50%)
-    rotate(${currentRotation + ANG_FIX_VISUAL}deg)
+    rotate(${currentRotation}deg)
     translateY(-${r}px)
   `;
 
-  // --- DETECÇÃO CORRETA ---
-  // translateY(-r) => vetor "pra cima" (-90°). rotate(+) em CSS é horário.
-  // Portanto o ângulo geométrico é: -90 - currentRotation
-  const setaAngle = normalize180(-90 - currentRotation);
+  // --- DETECÇÃO VETORIAL ---
+  const rad = (currentRotation - 90) * Math.PI / 180;
+  const sx = Math.cos(rad);
+  const sy = Math.sin(rad);
 
-  // Encontra o botão mais próximo dentro de uma tolerância
-  const TOL = 8; // graus
   let foundButton = null;
-  let bestDiff = 999;
+  let bestDot = -2;
 
   buttons.forEach((btn) => {
-    const btnAngle = getButtonAngle(btn); // [-180, 180]
-    const diff = normalize180(setaAngle - btnAngle);
-    const ad = Math.abs(diff);
-    if (ad <= TOL && ad < bestDiff) {
-      bestDiff = ad;
+    const rect = disc.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const btnRect = btn.getBoundingClientRect();
+    const bx = btnRect.left + btnRect.width / 2 - cx;
+    const by = btnRect.top + btnRect.height / 2 - cy;
+
+    const len = Math.hypot(bx, by);
+    const vx = bx / len;
+    const vy = by / len;
+
+    const dot = sx * vx + sy * vy; // alinhamento
+
+    // converte dot -> ângulo em graus
+    const angleDiff = Math.acos(dot) * (180 / Math.PI);
+
+    // só aceita botões com diferença de até 15°
+    if (angleDiff <= 15 && dot > bestDot) {
+      bestDot = dot;
       foundButton = btn;
     }
   });
 
-  // Atualiza o destaque somente quando houver mudança
+  // Atualiza o destaque
   if (foundButton !== activeButton) {
     if (activeButton) {
       activeButton.style.backgroundColor = "rgba(128,128,128,0.7)";
     }
     if (foundButton) {
       foundButton.style.backgroundColor = "#ff5050";
+
+      // "Agarradinha" só quando o usuário está arrastando
+      if (isDragging) {
+        locked = true;
+        velocity = 0;
+        clearTimeout(lockTimeout);
+        lockTimeout = setTimeout(() => {
+          locked = false;
+        }, 500);
+      }
     }
     activeButton = foundButton;
   }
@@ -114,6 +118,7 @@ disc.addEventListener("mousedown", (e) => {
   isDragging = true;
   disc.style.cursor = "grabbing";
   lastAngle = getAngle(e.clientX, e.clientY);
+  locked = false; // desbloqueia se o usuário mexer
 });
 
 // Quando solta o disco
@@ -135,5 +140,3 @@ window.addEventListener("mousemove", (e) => {
   velocity = delta * 1.5;
   lastAngle = angle;
 });
-
-
