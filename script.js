@@ -2,18 +2,19 @@ const disc = document.getElementById("disc");
 const seta = document.getElementById("seta");
 const buttons = document.querySelectorAll(".icon-btn");
 
+
 let isDragging = false;
 let currentRotation = 0;
 let velocity = 0;
 let lastAngle = 0;
 const autoSpinSpeed = 0.3;
-let activeButton = null; // botão atualmente destacado
-let locked = false;      // trava o disco na "agarradinha"
-let lockTimeout = null;  // controla o tempo de travamento
+let activeButton = null;
+let locked = false;
+let lockTimeout = null;
 
+// Utils
 function normalize180(a) {
-  let ang = ((a + 180) % 360 + 360) % 360 - 180;
-  return ang;
+  return ((a + 180) % 360 + 360) % 360 - 180;
 }
 
 function getAngle(x, y) {
@@ -23,38 +24,8 @@ function getAngle(x, y) {
   return Math.atan2(y - cy, x - cx) * (180 / Math.PI);
 }
 
-function spin() {
-  // Gira o disco
-  if (!locked) {
-    if (isDragging) {
-      currentRotation += velocity;
-    } else {
-      if (Math.abs(velocity) > autoSpinSpeed) {
-        velocity *= 0.95;
-        currentRotation += velocity;
-      } else {
-        velocity = 0;
-        currentRotation += autoSpinSpeed;
-      }
-    }
-  }
-
-  // Aplica a rotação ao disco
-  disc.style.transform = `translate(-50%, -50%) rotate(${currentRotation}deg)`;
-
-  // --- Posição da seta ---
-  const radius = disc.offsetWidth / 2;
-  const arrowH = seta.offsetHeight || 40;
-  const margem = 6;
-  const r = radius - arrowH / 2 - margem;
-
-  seta.style.transform = `
-    translate(-50%, -50%)
-    rotate(${currentRotation}deg)
-    translateY(-${r}px)
-  `;
-
-  // --- DETECÇÃO VETORIAL ---
+// Detecta qual botão a seta está apontando
+function detectButton() {
   const rad = (currentRotation - 90) * Math.PI / 180;
   const sx = Math.cos(rad);
   const sy = Math.sin(rad);
@@ -75,35 +46,57 @@ function spin() {
     const vx = bx / len;
     const vy = by / len;
 
-    const dot = sx * vx + sy * vy; // alinhamento
-
-    // converte dot -> ângulo em graus
+    const dot = sx * vx + sy * vy;
     const angleDiff = Math.acos(dot) * (180 / Math.PI);
 
-    // só aceita botões com diferença de até 15°
     if (angleDiff <= 15 && dot > bestDot) {
       bestDot = dot;
       foundButton = btn;
     }
   });
 
-  // Atualiza o destaque
+  return foundButton;
+}
+
+function spin() {
+  if (!locked) {
+    if (isDragging) {
+      currentRotation += velocity;
+    } else {
+      if (Math.abs(velocity) > autoSpinSpeed) {
+        velocity *= 0.95;
+        currentRotation += velocity;
+      } else {
+        velocity = 0;
+        currentRotation += autoSpinSpeed;
+      }
+    }
+  }
+
+  // aplica rotação
+  disc.style.transform = `translate(-50%, -50%) rotate(${currentRotation}deg)`;
+
+  // posição da seta
+  const radius = disc.offsetWidth / 2;
+  const arrowH = seta.offsetHeight || 40;
+  const margem = 6;
+  const r = radius - arrowH / 2 - margem;
+
+  seta.style.transform = `
+    translate(-50%, -50%)
+    rotate(${currentRotation}deg)
+    translateY(-${r}px)
+  `;
+
+  // só muda cor enquanto gira
+  const foundButton = detectButton();
   if (foundButton !== activeButton) {
     if (activeButton) {
       activeButton.style.backgroundColor = "rgba(128,128,128,0.7)";
+      activeButton.classList.remove("agarrado");
     }
     if (foundButton) {
       foundButton.style.backgroundColor = "#ff5050";
-
-      // "Agarradinha" só quando o usuário está arrastando
-      if (isDragging) {
-        locked = true;
-        velocity = 0;
-        clearTimeout(lockTimeout);
-        lockTimeout = setTimeout(() => {
-          locked = false;
-        }, 500);
-      }
     }
     activeButton = foundButton;
   }
@@ -113,21 +106,29 @@ function spin() {
 
 spin();
 
-// Quando começa a arrastar
+// arrastar
 disc.addEventListener("mousedown", (e) => {
   isDragging = true;
   disc.style.cursor = "grabbing";
   lastAngle = getAngle(e.clientX, e.clientY);
-  locked = false; // desbloqueia se o usuário mexer
+  locked = false;
 });
 
-// Quando solta o disco
+// soltar
 window.addEventListener("mouseup", () => {
   isDragging = false;
   disc.style.cursor = "grab";
+
+  // verifica se soltou em cima de um botão válido
+  const targetBtn = detectButton();
+  if (targetBtn) {
+    locked = true;
+    velocity = 0;
+    targetBtn.classList.add("agarrado");
+  }
 });
 
-// Movimento do mouse
+// movimento
 window.addEventListener("mousemove", (e) => {
   if (!isDragging) return;
 

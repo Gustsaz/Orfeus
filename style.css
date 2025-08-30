@@ -60,29 +60,22 @@ html {
   height: auto;
   z-index: 3;
   pointer-events: none;
-
-  /* Agora a rotação será feita pela ponta da seta */
   transform-origin: center center;
 }
-
 
 .icon-btn {
   position: absolute;
   background: rgba(128, 128, 128, 0.7);
   border: none;
   padding: 10px;
-  /* cria espaço interno */
   border-radius: 50%;
-  /* deixa redondo */
   border: 2px solid white;
-  /* borda branca */
   cursor: pointer;
   z-index: 3;
-
   display: flex;
-  /* centraliza a imagem */
   justify-content: center;
   align-items: center;
+  
 }
 
 .icon-btn img {
@@ -93,34 +86,55 @@ html {
   /* evita arrastar */
 }
 
+.icon-btn {
+  transition: transform 0.25s ease, background-color 0.2s ease;
+  transform-origin: center center;
+}
+
 .norte {
-  top: calc(50% - 36%);
+  top: calc(50% - 33.5%);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, -50%);
 }
 
 .sul {
   top: calc(50% + 30%);
   left: 50%;
-  transform: translateX(-50%);
+  transform: translate(-50%, 0);
 }
 
 .leste {
-  left: calc(50% + 16%);
   top: 50%;
-  transform: translateY(-50%);
+  left: calc(50% + 16%);
+  transform: translate(-50%, -50%);
 }
 
 .oeste {
-  left: calc(50% - 18%);
   top: 50%;
-  transform: translateY(-50%);
+  left: calc(50% - 16.5%);
+  transform: translate(-50%, -50%);
 }
 
 .sudoeste {
   top: calc(50% + 25%);
   left: calc(50% - 12%);
   transform: translate(-50%, -50%);
+}
+
+.norte.agarrado {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+.sul.agarrado {
+  transform: translate(-50%, 0) scale(1.25);
+}
+.leste.agarrado {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+.oeste.agarrado {
+  transform: translate(-50%, -50%) scale(1.25);
+}
+.sudoeste.agarrado {
+  transform: translate(-50%, -50%) scale(1.25);
 }
 
 .tonearm {
@@ -138,3 +152,4 @@ html {
   user-select: none;
   -webkit-user-drag: none;
 }
+
