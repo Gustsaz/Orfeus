@@ -12,41 +12,46 @@
 
   <div class="container">
     <img src="imgs/helipa_img.jpg" alt="Cidade de Helipa" class="background">
-    <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
 
+    <div class="turntable">
+      <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
+
+      <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
+
+      <button class="icon-btn norte">
+        <img src="imgs/afina_icon.png" alt="Afinação">
+      </button>
+
+      <button class="icon-btn sul">
+        <img src="imgs/course_icon.png" alt="Curso">
+      </button>
+
+      <button class="icon-btn sudoeste">
+        <img src="imgs/instru_icon.png" alt="Instrumentos">
+      </button>
+
+      <button class="icon-btn oeste">
+        <img src="imgs/rank_icon.png" alt="Ranking">
+      </button>
+    </div>
+
+
+    <!-- ✅ As cartas continuam atrás -->
     <div class="card card1"></div>
     <div class="card card2"></div>
     <div class="card card3"></div>
     <div class="card card4"></div>
 
-    <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
-
+    <!-- ✅ Tonearm permanece fixo -->
     <div class="tonearm">
       <img src="imgs/tonearm_img.png" alt="Tonearm" draggable="false">
     </div>
-
-    <button class="icon-btn norte">
-      <img src="imgs/afina_icon.png" alt="Afinação">
-    </button>
-
-    <button class="icon-btn sul">
-      <img src="imgs/course_icon.png" alt="Curso">
-    </button>
-
-    <button class="icon-btn sudoeste">
-      <img src="imgs/instru_icon.png" alt="Instrumentos">
-    </button>
-
-    <button class="icon-btn oeste">
-      <img src="imgs/rank_icon.png" alt="Ranking">
-    </button>
-
   </div>
 
+  <!-- Popup da música -->
   <div class="music-popup" id="musicPopup">
     <p>Nome da Música - Artista</p>
   </div>
-
 
   <script src="script.js"></script>
 </body>

@@ -1,29 +1,27 @@
-/* --- Cartas atrás do disco --- */
 :root {
   --card-size: clamp(320px, 58vmin, 720px);
-  /* ajuste geral de tamanho */
   --card-gap: clamp(20px, 4vmin, 56px);
-  /* quanto “abre” o leque */
 }
 
+/* reset */
 * {
   margin: 0;
   padding: 0;
-  box-sizing: border-box;
+  box-sizing: border-box
 }
 
 img {
   -webkit-user-drag: none;
   user-drag: none;
-  user-select: none;
+  user-select: none
 }
 
-body,
-html {
+html,
+body {
   width: 100%;
   height: 100%;
   overflow: hidden;
-  background: black;
+  background: #000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -32,258 +30,269 @@ html {
 .container {
   position: relative;
   width: 100%;
-  height: 100%;
+  height: 100%
 }
 
 .background {
   position: absolute;
-  top: 0;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   z-index: 1;
 }
 
-.disc {
+/* -------------------- DISCO + SETA + BOTÕES -------------------- */
+.disc,
+.seta,
+.icon-btn {
   position: absolute;
   top: 50%;
   left: 50%;
-  width: 45%;
-  max-width: 600px;
-  transform: translate(-50%, -50%);
-  z-index: 2;
-  cursor: grab;
-
-  -webkit-user-drag: none;
-  user-drag: none;
-  user-select: none;
 }
 
+/* Disco: tamanho original do seu projeto */
+.disc {
+  width: 45vw;
+  max-width: 600px;
+  z-index: 2;
+  cursor: grab;
+  transform: translate(-50%, -50%) rotate(var(--rotation, 0deg));
+  transition: margin-left .8s ease;
+  /* só anima o shift lateral */
+}
+
+/* Seta: orbita o disco (roda igual ao disco) */
 .seta {
-  position: absolute;
-  top: 50%;
-  left: 50%;
   width: 40px;
   height: auto;
   z-index: 3;
   pointer-events: none;
   transform-origin: center center;
+  transition: margin-left .8s ease;
+  /* acompanha o deslocamento lateral */
 }
 
+/* Deslocamento em grupo para a ESQUERDA sem mexer no transform base */
+/* Move conjunto para a esquerda */
+.disc.move-left,
+.seta.move-left,
+.icon-btn.move-left,
+.tonearm.move-left {
+  margin-left: -28vw;
+  /* ajusta esse valor conforme o gosto */
+  transition: margin-left 0.8s ease;
+}
+
+/* Botões */
 .icon-btn {
-  position: absolute;
-  background: rgba(128, 128, 128, 0.7);
-  border: none;
-  padding: 10px;
+  background: rgba(128, 128, 128, .7);
+  border: 2px solid #fff;
   border-radius: 50%;
-  border: 2px solid white;
-  cursor: pointer;
+  padding: 10px;
   z-index: 3;
   display: flex;
-  justify-content: center;
   align-items: center;
-
+  justify-content: center;
+  transform-origin: center center;
+  transition: transform .25s ease, background-color .2s ease, margin-left .8s ease;
 }
 
 .icon-btn img {
   width: 30px;
-  /* reduz um pouco pra caber dentro do círculo */
   height: 30px;
-  pointer-events: none;
-  /* evita arrastar */
+  pointer-events: none
 }
 
-.icon-btn {
-  transition: transform 0.25s ease, background-color 0.2s ease;
-  transform-origin: center center;
-}
-
+/* Posições (as mesmas que você tinha, referenciadas ao viewport) */
 .norte {
   top: calc(50% - 33.5%);
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%)
 }
 
 .sul {
   top: calc(50% + 30%);
   left: 50%;
-  transform: translate(-50%, 0);
+  transform: translate(-50%, 0)
 }
 
 .leste {
   top: 50%;
   left: calc(50% + 16%);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%)
 }
 
 .oeste {
   top: 50%;
   left: calc(50% - 16.5%);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%)
 }
 
 .sudoeste {
   top: calc(50% + 25%);
   left: calc(50% - 12%);
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%)
 }
 
 .norte.agarrado {
-  transform: translate(-50%, -50%) scale(1.25);
+  transform: translate(-50%, -50%) scale(1.25)
 }
 
 .sul.agarrado {
-  transform: translate(-50%, 0) scale(1.25);
+  transform: translate(-50%, 0) scale(1.25)
 }
 
 .leste.agarrado {
-  transform: translate(-50%, -50%) scale(1.25);
+  transform: translate(-50%, -50%) scale(1.25)
 }
 
 .oeste.agarrado {
-  transform: translate(-50%, -50%) scale(1.25);
+  transform: translate(-50%, -50%) scale(1.25)
 }
 
 .sudoeste.agarrado {
-  transform: translate(-50%, -50%) scale(1.25);
+  transform: translate(-50%, -50%) scale(1.25)
 }
 
+/* Tonearm (braço) */
 .tonearm {
   position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(20%, -50%);
   z-index: 4;
-  pointer-events: none;
+  pointer-events: none
 }
 
 .tonearm img {
   width: 320px;
   height: auto;
   user-select: none;
-  -webkit-user-drag: none;
+  -webkit-user-drag: none
 }
 
-/* BASE: altura e largura explícitas (sem aspect-ratio) */
+/* -------------------- CARDS -------------------- */
 .card {
-  opacity: 0.3;
-  /* padrão: transparente */
+  opacity: .3;
   position: absolute;
   top: 50%;
   left: 50%;
   width: var(--card-size);
   height: var(--card-size);
-  /* ✅ altura explícita pra poder animar */
-  background: rgba(255, 255, 255, 0.08);
-  border: 2px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, .08);
+  border: 2px solid rgba(255, 255, 255, .18);
   border-radius: 16px;
   transform: translate(-50%, -50%);
   z-index: 1;
   pointer-events: none;
-  transition:
-    height 0.42s ease,
-    /* ✅ vertical: ligeiramente mais lenta */
-    width 0.26s ease,
-    /* ✅ horizontal: mais rápida */
-    transform 0.6s ease,
-    border-radius 0.3s ease,
-    background 0.3s ease;
-    opacity: 0.3s ease;
-  /* também anima a opacidade */
-
+  transition: height .42s ease, width .26s ease, transform .6s ease,
+    border-radius .3s ease, background .3s ease, opacity .3s ease;
 }
 
-/* Carta vem pra frente */
+
 .card.front {
   z-index: 5;
-  opacity: 1; /* totalmente visível */
-  transform: translate(-50%, -50%) rotate(0deg) scale(1.05);
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0) scale(1.05)
 }
 
-/* Etapa 1: só altura (âncora no centro) */
+/* Etapa 1: aumenta altura (centralizado) */
 .card.open-vertical {
   height: 90vh;
   width: var(--card-size);
-  /* mantém a largura original nessa etapa */
+  position: absolute;
+  top: 50%;
+  left: 50%;
   transform: translate(-50%, -50%);
+  transform-origin: center center; /* cresce simétrico */
 }
 
-/* Etapa 2: depois, largura + estilo */
+/* Etapa 2: estica só para a direita */
 .card.open-horizontal {
+  height: 90vh;
   width: 90vw;
-  transform: translate(-50%, -50%);
+  max-width: 1100px;
+
+  position: absolute;
+  top: 50%;
+  left: 50%;                 /* ancora o card no centro da tela */
+  transform: translateX(0) translateY(-50%); 
+  transform-origin: left center; /* lado esquerdo preso no centro */
+top: 50%;
+  left: 50%;
+  transform: translateY(-50%);   /* só centraliza no eixo Y */
+  transform-origin: left center; /* fixa lado esquerdo */
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.25);
 }
-/* Card 1: posição no leque + cor */
+
+
+/* Leque + cores */
 .card1 {
-  transform: translate(-50%, -50%) rotate(-18deg)
-             translate(calc(-1.5 * var(--card-gap)), calc(-1.0 * var(--card-gap)));
-  background: rgba(255, 99, 71, 0.25); /* vermelho */
+  transform: translate(-50%, -50%) rotate(-18deg) translate(calc(-1.5*var(--card-gap)), calc(-1.0*var(--card-gap)));
+  background: rgba(255, 99, 71, .25)
 }
 
-/* Card 2 */
 .card2 {
-  transform: translate(-50%, -50%) rotate(-6deg)
-             translate(calc(-0.7 * var(--card-gap)), calc(-0.3 * var(--card-gap)));
-  background: rgba(30, 144, 255, 0.25); /* azul */
+  transform: translate(-50%, -50%) rotate(-6deg) translate(calc(-0.7*var(--card-gap)), calc(-0.3*var(--card-gap)));
+  background: rgba(30, 144, 255, .25)
 }
 
-/* Card 3 */
 .card3 {
-  transform: translate(-50%, -50%) rotate(6deg)
-             translate(calc(0.7 * var(--card-gap)), calc(0.3 * var(--card-gap)));
-  background: rgba(60, 179, 113, 0.25); /* verde */
+  transform: translate(-50%, -50%) rotate(6deg) translate(calc(0.7*var(--card-gap)), calc(0.3*var(--card-gap)));
+  background: rgba(60, 179, 113, .25)
 }
 
-/* Card 4 */
 .card4 {
-  transform: translate(-50%, -50%) rotate(18deg)
-             translate(calc(1.5 * var(--card-gap)), calc(1.0 * var(--card-gap)));
-  background: rgba(255, 215, 0, 0.25); /* amarelo */
+  transform: translate(-50%, -50%) rotate(18deg) translate(calc(1.5*var(--card-gap)), calc(1.0*var(--card-gap)));
+  background: rgba(255, 215, 0, .25)
 }
 
 .card1.front,
 .card1.open-vertical,
 .card1.open-horizontal {
-  background: rgba(255, 99, 71, 0.25);
+  background: rgba(255, 99, 71, .25)
 }
 
 .card2.front,
 .card2.open-vertical,
 .card2.open-horizontal {
-  background: rgba(30, 144, 255, 0.25);
+  background: rgba(30, 144, 255, .25)
 }
 
 .card3.front,
 .card3.open-vertical,
 .card3.open-horizontal {
-  background: rgba(60, 179, 113, 0.25);
+  background: rgba(60, 179, 113, .25)
 }
 
 .card4.front,
 .card4.open-vertical,
 .card4.open-horizontal {
-  background: rgba(255, 215, 0, 0.25);
+  background: rgba(255, 215, 0, .25)
 }
 
+/* Popup música */
 .music-popup {
   position: fixed;
-  bottom: 60px;        /* um pouco acima do canto */
-  right: -300px;       /* começa fora da tela */
-  background: rgba(0, 0, 0, 0.8);
-  color: white;
+  bottom: 60px;
+  right: -300px;
+  background: rgba(0, 0, 0, .8);
+  color: #fff;
   padding: 12px 20px;
   border-radius: 12px 0 0 12px;
   font-size: 14px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-  transition: transform 0.6s ease, right 0.6s ease;
-  transform: translateX(0);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+  transition: right .6s ease;
   z-index: 9999;
+  white-space: nowrap;
 }
 
-/* estado visível */
 .music-popup.show {
-  right: 20px;          /* para dentro da tela */
+  right: 20px
+}
+
+.music-popup.hide {
+  right: -300px
 }
