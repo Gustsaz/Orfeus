@@ -27,6 +27,26 @@ body {
   align-items: center;
 }
 
+/* --- Sidebar --- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  /* largura inicial */
+  height: 100vh;
+  /* ocupa toda altura da tela */
+  background: black;
+  /* toda preta */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 999;
+  /* fica acima do fundo mas abaixo do popup */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+}
+
 .container {
   position: relative;
   width: 100%;
@@ -79,7 +99,7 @@ body {
 .seta.move-left,
 .icon-btn.move-left,
 .tonearm.move-left {
-  margin-left: -28vw;
+  margin-left: -25vw;
   /* ajusta esse valor conforme o gosto */
   transition: margin-left 0.8s ease;
 }
@@ -223,8 +243,32 @@ body {
   /* mantém centralizado */
   border-radius: 20px;
   background: rgba(255, 255, 255, 0.25);
+  pointer-events: auto;
+}
+.close-card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;   /* 🔥 menor */
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+  display: none; /* 🔥 escondido por padrão */
 }
 
+.card.open-horizontal .close-card {
+  display: block; /* 🔥 aparece só quando o card estiver aberto */
+}
+
+.close-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
 
 /* Leque + cores */
 .card1 {

@@ -221,3 +221,22 @@ window.addEventListener("DOMContentLoaded", () => {
     }, 5000);
   }, 2000);
 });
+
+document.querySelectorAll(".close-card").forEach(btn => {
+  btn.addEventListener("click", () => {
+    // Fecha todos os cards
+    closeAllCards();
+    locked = false;
+
+    // Volta o turntable pro centro
+    const tonearm = document.querySelector(".tonearm");
+    [disc, seta, ...buttons, tonearm].forEach(el => el.classList.remove("move-left"));
+
+    // Reseta botão ativo
+    if (activeButton) {
+      activeButton.style.backgroundColor = "rgba(128,128,128,0.7)";
+      activeButton.classList.remove("agarrado");
+      activeButton = null;
+    }
+  });
+});
