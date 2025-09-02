@@ -12,7 +12,6 @@
 
 img {
   -webkit-user-drag: none;
-  user-drag: none;
   user-select: none
 }
 
@@ -25,6 +24,11 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.turntable {
+  -webkit-user-drag: none;
+  user-select: none;
 }
 
 /* --- Sidebar --- */
@@ -121,8 +125,7 @@ body {
 .icon-btn img {
   width: 30px;
   height: 30px;
-  pointer-events: none
-  transition: margin-left 0.8s ease;
+  pointer-events: none transition: margin-left 0.8s ease;
 }
 
 /* Hover ativo somente quando os botões estiverem habilitados */
@@ -187,7 +190,7 @@ body {
   top: 50%;
   left: 50%;
   transform: translate(20%, -54%) rotate(0deg);
-  z-index: 4; 
+  z-index: 4;
   cursor: pointer;
   transition: margin-left 0.8s ease, transform 0.8s ease, z-index 0.3s ease;
 }
@@ -255,22 +258,26 @@ body {
   background: rgba(255, 255, 255, 0.25);
   pointer-events: auto;
 }
+
 .close-card {
   position: absolute;
   top: 12px;
   right: 12px;
-  width: 20px;   /* 🔥 menor */
+  width: 20px;
+  /* 🔥 menor */
   height: 20px;
   background: transparent;
   border: none;
   cursor: pointer;
   z-index: 10;
   padding: 0;
-  display: none; /* 🔥 escondido por padrão */
+  display: none;
+  /* 🔥 escondido por padrão */
 }
 
 .card.open-horizontal .close-card {
-  display: block; /* 🔥 aparece só quando o card estiver aberto */
+  display: block;
+  /* 🔥 aparece só quando o card estiver aberto */
 }
 
 .close-card img {
@@ -317,7 +324,7 @@ body {
   background: url("imgs/cursos_album.png") center/cover no-repeat;
 }
 
-.card2.open-horizontal{
+.card2.open-horizontal {
   background: rgba(60, 179, 113, .25)
 }
 
@@ -327,7 +334,7 @@ body {
   background: url("imgs/instru_album.png") center/cover no-repeat;
 }
 
-.card3.open-horizontal{
+.card3.open-horizontal {
   background: rgba(255, 0, 0, .25)
 }
 
@@ -364,4 +371,3 @@ body {
 .music-popup.hide {
   right: -300px
 }
-
