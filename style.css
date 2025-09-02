@@ -278,7 +278,7 @@ body {
 
 .card2 {
   transform: translate(-50%, -50%) rotate(-6deg) translate(calc(-0.7*var(--card-gap)), calc(-0.3*var(--card-gap)));
-  background: rgba(30, 144, 255, .25)
+  background: url("imgs/cursos_album.png") center/cover no-repeat;
 }
 
 .card3 {
@@ -288,7 +288,7 @@ body {
 
 .card4 {
   transform: translate(-50%, -50%) rotate(18deg) translate(calc(1.5*var(--card-gap)), calc(1.0*var(--card-gap)));
-  background: rgba(255, 215, 0, .25)
+  background: url("imgs/rank_album.png") center/cover no-repeat;
 }
 
 .card1.front,
@@ -323,6 +323,10 @@ body {
 
 .card4.front,
 .card4.open-vertical,
+.card4.open-horizontal {
+  background: url("imgs/rank_album.png") center/cover no-repeat;
+}
+
 .card4.open-horizontal {
   background: rgba(255, 215, 0, .25)
 }
