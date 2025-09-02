@@ -3,7 +3,6 @@
   --card-gap: clamp(20px, 4vmin, 56px);
 }
 
-/* reset */
 * {
   margin: 0;
   padding: 0;
@@ -372,6 +371,103 @@ body {
 .music-popup.hide {
   right: -300px
 }
+
+/* Esconde a sidebar em telas pequenas */
+@media (max-width: 1000px) {
+  .sidebar {
+    display: none;
+  }
+
+  .disc {
+    width: 70vw;
+    /* disco maior no mobile */
+  }
+
+  .tonearm img {
+    width: 200px;
+    /* braço proporcional */
+  }
+
+  /* Esconde a seta no mobile */
+  .seta {
+    display: none;
+  }
+
+  /* ----- BOTÕES EM LINHA NA PARTE DE BAIXO ----- */
+  .icon-btn {
+    position: static;
+    /* reseta posição absoluta */
+    margin: 0 10px;
+    padding: 16px;
+    background: rgba(128, 128, 128, .7);
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+
+  .icon-btn img {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Contêiner flex só no mobile */
+  .turntable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  /* Linha de botões na parte inferior */
+  .turntable::after {
+    content: "";
+    display: block;
+    flex-grow: 1;
+    /* empurra os botões para baixo */
+  }
+
+  .icon-btn.norte,
+  .icon-btn.sul,
+  .icon-btn.oeste,
+  .icon-btn.sudoeste {
+    top: auto;
+    left: auto;
+    transform: none;
+    /* reseta transformações */
+  }
+
+  .turntable {
+    gap: 12px;
+  }
+
+  .turntable .disc,
+  .turntable .tonearm {
+    margin-bottom: auto;
+    /* ficam acima */
+  }
+
+  /* Os botões ficam em linha no rodapé */
+  .turntable .icon-btn {
+    flex: 0 0 auto;
+  }
+
+  .turntable {
+    flex-direction: column;
+  }
+
+  .turntable-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .seta {
+    display: none;
+  }
+}
+
 
 /* Esconde a sidebar em telas pequenas */
 @media (max-width: 768px) {
