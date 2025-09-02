@@ -122,7 +122,11 @@ function spin() {
     translateY(-${r}px)
   `;
 
-  const foundButton = detectButton();
+  let foundButton = null;
+  if (window.innerWidth > 768) {
+    // só detecta no desktop
+    foundButton = detectButton();
+  }
 
   if (!locked && foundButton !== activeButton) {
     if (activeButton) {
@@ -146,6 +150,7 @@ spin();
 
 // Drag
 disc.addEventListener("mousedown", e => {
+  if (window.innerWidth <= 768) return; // ignora drag no mobile
   isDragging = true;
   disc.style.cursor = "grabbing";
   lastAngle = getAngle(e.clientX, e.clientY);
@@ -246,29 +251,45 @@ document.querySelectorAll(".close-card").forEach(btn => {
 const tonearm = document.querySelector(".tonearm");
 const iconButtons = document.querySelectorAll(".icon-btn");
 
-// estado inicial: botões desativados
-iconButtons.forEach(btn => btn.style.pointerEvents = "none");
+// --- Estado inicial ---
+function setupButtons() {
+  if (window.innerWidth <= 768) {
+    // Mobile → sempre clicáveis
+    iconButtons.forEach(btn => {
+      btn.style.pointerEvents = "auto";
+      btn.style.cursor = "pointer";
+      btn.classList.add("enabled");
+    });
+  } else {
+    // Desktop → começam desativados
+    iconButtons.forEach(btn => btn.style.pointerEvents = "none");
+  }
+}
+setupButtons();
+window.addEventListener("resize", setupButtons);
 
+// --- Tonearm só afeta no desktop ---
 tonearm.addEventListener("click", () => {
+  if (window.innerWidth <= 768) return; // ignora no mobile
+
   tonearmLifted = !tonearmLifted;
   tonearm.classList.toggle("lifted", tonearmLifted);
 
   iconButtons.forEach(btn => {
     btn.style.pointerEvents = tonearmLifted ? "auto" : "none";
     btn.style.cursor = tonearmLifted ? "pointer" : "default";
-    btn.classList.toggle("enabled", tonearmLifted); // <-- adiciona ou remove classe
+    btn.classList.toggle("enabled", tonearmLifted);
   });
 });
 
-// Permite abrir cards ao clicar nos botões quando o braço está levantado
+// --- Clique nos botões ---
 iconButtons.forEach(btn => {
   btn.addEventListener("click", () => {
-    if (!tonearmLifted) return; // ignora se braço está abaixado
+    // Desktop: precisa do braço levantado
+    if (window.innerWidth > 768 && !tonearmLifted) return;
 
-    // Fecha cards anteriores
     closeAllCards();
 
-    // Atualiza estado de bloqueio e botão ativo
     locked = true;
     if (activeButton) {
       activeButton.classList.remove("agarrado");
@@ -278,16 +299,13 @@ iconButtons.forEach(btn => {
     btn.classList.add("agarrado");
     btn.style.backgroundColor = "#ff5050";
 
-    // Identifica o card correspondente
     const card = getCardFromButton(btn);
     if (card) {
       card.classList.add("front");
       openCardSequentially(card);
     }
 
-    // Move os elementos para a esquerda, como no drag
     const tonearm = document.querySelector(".tonearm");
     [disc, seta, ...buttons, tonearm].forEach(el => el.classList.add("move-left"));
   });
 });
-
