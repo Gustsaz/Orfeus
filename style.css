@@ -304,6 +304,10 @@ body {
 .card2.front,
 .card2.open-vertical,
 .card2.open-horizontal {
+  background: url("imgs/cursos_album.png") center/cover no-repeat;
+}
+
+.card2.open-horizontal{
   background: rgba(60, 179, 113, .25)
 }
 
