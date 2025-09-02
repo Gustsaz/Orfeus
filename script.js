@@ -1,6 +1,7 @@
 const disc = document.getElementById("disc");
 const seta = document.getElementById("seta");
 const buttons = document.querySelectorAll(".icon-btn");
+let tonearmLifted = false;
 
 let isDragging = false;
 let currentRotation = 0;
@@ -81,17 +82,17 @@ let movedThisFrame = false;
 
 // Rotação
 function updateRotation() {
+  if (tonearmLifted) return; 
+
   if (isDragging) {
     if (movedThisFrame) {
       currentRotation += velocity;
       if (velocity !== 0) lastSpinSign = Math.sign(velocity);
     } else {
-      // mouse parado → não gira
       velocity = 0;
     }
-    movedThisFrame = false; // reseta pro próximo frame
+    movedThisFrame = false;
   } else {
-    // inércia após soltar
     if (Math.abs(velocity) > minSpin) {
       velocity *= friction;
       currentRotation += velocity;
@@ -101,6 +102,7 @@ function updateRotation() {
     }
   }
 }
+
 
 // Loop
 function spin() {
@@ -240,3 +242,52 @@ document.querySelectorAll(".close-card").forEach(btn => {
     }
   });
 });
+
+const tonearm = document.querySelector(".tonearm");
+const iconButtons = document.querySelectorAll(".icon-btn");
+
+// estado inicial: botões desativados
+iconButtons.forEach(btn => btn.style.pointerEvents = "none");
+
+tonearm.addEventListener("click", () => {
+  tonearmLifted = !tonearmLifted;
+  tonearm.classList.toggle("lifted", tonearmLifted);
+
+  iconButtons.forEach(btn => {
+    btn.style.pointerEvents = tonearmLifted ? "auto" : "none";
+    btn.style.cursor = tonearmLifted ? "pointer" : "default";
+    btn.classList.toggle("enabled", tonearmLifted); // <-- adiciona ou remove classe
+  });
+});
+
+// Permite abrir cards ao clicar nos botões quando o braço está levantado
+iconButtons.forEach(btn => {
+  btn.addEventListener("click", () => {
+    if (!tonearmLifted) return; // ignora se braço está abaixado
+
+    // Fecha cards anteriores
+    closeAllCards();
+
+    // Atualiza estado de bloqueio e botão ativo
+    locked = true;
+    if (activeButton) {
+      activeButton.classList.remove("agarrado");
+      activeButton.style.backgroundColor = "rgba(128,128,128,0.7)";
+    }
+    activeButton = btn;
+    btn.classList.add("agarrado");
+    btn.style.backgroundColor = "#ff5050";
+
+    // Identifica o card correspondente
+    const card = getCardFromButton(btn);
+    if (card) {
+      card.classList.add("front");
+      openCardSequentially(card);
+    }
+
+    // Move os elementos para a esquerda, como no drag
+    const tonearm = document.querySelector(".tonearm");
+    [disc, seta, ...buttons, tonearm].forEach(el => el.classList.add("move-left"));
+  });
+});
+
