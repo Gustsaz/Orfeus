@@ -189,7 +189,7 @@ body {
   transform: translate(20%, -50%) rotate(0deg);
   z-index: 4; 
   cursor: pointer;
-  transition: transform 0.8s ease, z-index 0.3s ease;
+  transition: margin-left 0.8s ease, transform 0.8s ease, z-index 0.3s ease;
 }
 
 .tonearm img {
@@ -197,7 +197,7 @@ body {
   height: auto;
   user-select: none;
   -webkit-user-drag: none;
-  transition: margin-left 0.8s ease;
+  transition: margin-left 0.8s ease, transform 0.8s ease, z-index 0.3s ease;
 }
 
 .tonearm.lifted {
