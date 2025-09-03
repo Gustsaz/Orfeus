@@ -1,0 +1,719 @@
+:root {
+  --card-size: clamp(320px, 58vmin, 720px);
+  --card-gap: clamp(20px, 4vmin, 56px);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box
+}
+
+img {
+  -webkit-user-drag: none;
+  user-select: none
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.turntable {
+  -webkit-user-drag: none;
+  user-select: none;
+}
+
+/* --- Sidebar --- */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100px;
+  /* largura inicial */
+  height: 100vh;
+  /* ocupa toda altura da tela */
+  background: black;
+  /* toda preta */
+  color: white;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  z-index: 999;
+  /* fica acima do fundo mas abaixo do popup */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.6);
+}
+
+.container {
+  position: relative;
+  width: 100%;
+  height: 100%
+}
+
+.background {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  z-index: 1;
+}
+
+/* -------------------- DISCO + SETA + BOTÕES -------------------- */
+.disc,
+.seta,
+.icon-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+}
+
+/* Disco: tamanho original do seu projeto */
+.disc {
+  width: 45vw;
+  max-width: 600px;
+  z-index: 2;
+  cursor: grab;
+  transform: translate(-50%, -50%) rotate(var(--rotation, 0deg));
+  transition: margin-left .8s ease;
+  /* só anima o shift lateral */
+}
+
+/* Seta: orbita o disco (roda igual ao disco) */
+.seta {
+  width: 40px;
+  height: auto;
+  z-index: 3;
+  pointer-events: none;
+  transform-origin: center center;
+  transition: margin-left .8s ease;
+  /* acompanha o deslocamento lateral */
+}
+
+/* Deslocamento em grupo para a ESQUERDA sem mexer no transform base */
+/* Move conjunto para a esquerda */
+.disc.move-left,
+.seta.move-left,
+.icon-btn.move-left,
+.tonearm.move-left {
+  margin-left: -25vw;
+  /* ajusta esse valor conforme o gosto */
+  transition: margin-left 0.8s ease;
+}
+
+/* Botões */
+.icon-btn {
+  background: rgba(128, 128, 128, .7);
+  border: 2px solid #fff;
+  border-radius: 50%;
+  padding: 10px;
+  z-index: 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transform-origin: center center;
+  transition: transform .25s ease, background-color .2s ease, margin-left .8s ease;
+}
+
+.icon-btn img {
+  width: 30px;
+  height: 30px;
+  pointer-events: none;
+  transition: margin-left 0.8s ease;
+}
+
+/* Hover ativo somente quando os botões estiverem habilitados */
+.icon-btn.enabled:hover {
+  background-color: #ff5050;
+}
+
+
+/* Posições (as mesmas que você tinha, referenciadas ao viewport) */
+.norte {
+  top: calc(50% - 33.5%);
+  left: 50%;
+  transform: translate(-50%, -50%)
+}
+
+.sul {
+  top: calc(50% + 30%);
+  left: 50%;
+  transform: translate(-50%, 0)
+}
+
+.leste {
+  top: 50%;
+  left: calc(50% + 16%);
+  transform: translate(-50%, -50%)
+}
+
+.oeste {
+  top: 50%;
+  left: calc(50% - 16.5%);
+  transform: translate(-50%, -50%)
+}
+
+.sudoeste {
+  top: calc(50% + 25%);
+  left: calc(50% - 12%);
+  transform: translate(-50%, -50%)
+}
+
+.norte.agarrado {
+  transform: translate(-50%, -50%) scale(1.25)
+}
+
+.sul.agarrado {
+  transform: translate(-50%, 0) scale(1.25)
+}
+
+.leste.agarrado {
+  transform: translate(-50%, -50%) scale(1.25)
+}
+
+.oeste.agarrado {
+  transform: translate(-50%, -50%) scale(1.25)
+}
+
+.sudoeste.agarrado {
+  transform: translate(-50%, -50%) scale(1.25)
+}
+
+.tonearm {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(20%, -54%) rotate(0deg);
+  z-index: 4;
+  cursor: pointer;
+  transition: margin-left 0.8s ease, transform 0.8s ease, z-index 0.3s ease;
+}
+
+.tonearm img {
+  width: 320px;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  transition: margin-left 0.8s ease, transform 0.8s ease, z-index 0.3s ease;
+}
+
+.tonearm.lifted {
+  transform: translate(20%, -70%) rotate(45deg);
+  z-index: 2;
+}
+
+/* -------------------- CARDS -------------------- */
+.card {
+  opacity: .3;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: var(--card-size);
+  height: var(--card-size);
+  background: rgba(255, 255, 255, .08);
+  border: 2px solid rgba(255, 255, 255, .18);
+  border-radius: 16px;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  pointer-events: none;
+  transition: height .42s ease, width .26s ease, transform .6s ease,
+    border-radius .3s ease, background .3s ease, opacity .3s ease;
+}
+
+
+.card.front {
+  z-index: 5;
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0) scale(1.05)
+}
+
+/* Etapa 1: aumenta altura (centralizado) */
+.card.open-vertical {
+  height: 90vh;
+  width: var(--card-size);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  transform-origin: center center;
+  /* cresce simétrico */
+}
+
+/* Etapa 2: abre horizontalmente */
+.card.open-horizontal {
+  width: 95vw;
+  /* ocupa quase a tela toda */
+  max-width: 1400px;
+  /* limite opcional, pode aumentar ou remover */
+  height: 90vh;
+  transform: translate(-50%, -50%);
+  /* mantém centralizado */
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.25);
+  pointer-events: auto;
+}
+
+.close-card {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 20px;
+  /* 🔥 menor */
+  height: 20px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 10;
+  padding: 0;
+  display: none;
+  /* 🔥 escondido por padrão */
+}
+
+.card.open-horizontal .close-card {
+  display: block;
+  /* 🔥 aparece só quando o card estiver aberto */
+}
+
+.close-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+}
+
+/* Leque + cores */
+.card1 {
+  transform: translate(-50%, -50%) rotate(-18deg) translate(calc(-1.5*var(--card-gap)), calc(-1.0*var(--card-gap)));
+  background: url("imgs/afina_album.png") center/cover no-repeat;
+}
+
+.card2 {
+  transform: translate(-50%, -50%) rotate(-6deg) translate(calc(-0.7*var(--card-gap)), calc(-0.3*var(--card-gap)));
+  background: url("imgs/cursos_album.png") center/cover no-repeat;
+}
+
+.card3 {
+  transform: translate(-50%, -50%) rotate(6deg) translate(calc(0.7*var(--card-gap)), calc(0.3*var(--card-gap)));
+  background: url("imgs/instru_album.png") center/cover no-repeat;
+}
+
+.card4 {
+  transform: translate(-50%, -50%) rotate(18deg) translate(calc(1.5*var(--card-gap)), calc(1.0*var(--card-gap)));
+  background: url("imgs/rank_album.png") center/cover no-repeat;
+}
+
+.card1.front,
+.card1.open-vertical,
+.card1.open-horizontal {
+  background: url("imgs/afina_album.png") center/cover no-repeat;
+}
+
+.card1.open-horizontal {
+  background: rgba(30, 144, 255, .25)
+}
+
+.card2.front,
+.card2.open-vertical,
+.card2.open-horizontal {
+  background: url("imgs/cursos_album.png") center/cover no-repeat;
+}
+
+.card2.open-horizontal {
+  background: rgba(60, 179, 113, .25)
+}
+
+.card3.front,
+.card3.open-vertical,
+.card3.open-horizontal {
+  background: url("imgs/instru_album.png") center/cover no-repeat;
+}
+
+.card3.open-horizontal {
+  background: rgba(255, 0, 0, .25)
+}
+
+.card4.front,
+.card4.open-vertical,
+.card4.open-horizontal {
+  background: url("imgs/rank_album.png") center/cover no-repeat;
+}
+
+.card4.open-horizontal {
+  background: rgba(255, 215, 0, .25)
+}
+
+/* Popup música */
+.music-popup {
+  position: fixed;
+  bottom: 60px;
+  right: -300px;
+  background: rgba(0, 0, 0, .8);
+  color: #fff;
+  padding: 12px 20px;
+  border-radius: 12px 0 0 12px;
+  font-size: 14px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .3);
+  transition: right .6s ease;
+  z-index: 9999;
+  white-space: nowrap;
+}
+
+.music-popup.show {
+  right: 20px
+}
+
+.music-popup.hide {
+  right: -300px
+}
+
+.tuner {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  width: 100%;
+  text-align: center;
+  gap: 32px;
+  /* mais espaçamento */
+}
+
+.tuner-bar {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+}
+
+.marker {
+  width: 18px;
+  height: 40px;
+  background: #555;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+.marker.center {
+  height: 60px;
+  width: 26px;
+}
+
+.tuner-note {
+  font-size: 64px;
+  /* nota bem grande */
+  margin-top: 16px;
+}
+
+/* Botão de microfone */
+.mic-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.mic-btn img {
+  width: 48px;
+  height: 48px;
+}
+
+/* Mostra o afinador somente quando o card1 estiver aberto */
+.card1.open-horizontal .tuner {
+  display: flex;
+}
+
+/* Contêiner da barra de marcadores */
+#tunerArc {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  max-width: 500px;
+  margin-bottom: 16px;
+}
+
+/* Cada marcador */
+.marker {
+  width: 18px;
+  height: 40px;
+  background: #555;
+  border-radius: 4px;
+  transition: background 0.2s;
+}
+
+/* Marcador central (nota afinada) */
+.marker.center {
+  height: 60px;
+  width: 26px;
+}
+
+/* Nota detectada */
+#tunerNote {
+  font-size: 64px;
+  font-weight: bold;
+  margin-top: 8px;
+  text-align: center;
+}
+
+#virtual-piano-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
+#virtual-piano {
+  position: relative;
+  display: flex;
+  user-select: none;
+}
+
+.white-keys {
+  display: flex;
+}
+
+.black-keys {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: flex;
+  pointer-events: none; /* as pretas ainda recebem evento no filho */
+}
+
+.key {
+  cursor: pointer;
+  user-select: none;
+}
+
+.key.white {
+  width: 40px;
+  height: 160px;
+  background: white;
+  border: 1px solid #000;
+  z-index: 1;
+}
+
+.key.black {
+  width: 26px;
+  height: 100px;
+  background: black;
+  border-radius: 0 0 3px 3px;
+  position: absolute;
+  z-index: 2;
+  pointer-events: auto; /* ativa clique */
+}
+
+.key.white.active {
+  background: #ccc; /* cinza claro nas brancas */
+}
+
+.key.black.active {
+  background: #555; /* cinza mais escuro nas pretas */
+}
+
+.card3 #virtual-piano-container {
+  display: none;
+}
+
+.card3.open-horizontal #virtual-piano-container {
+  display: flex;
+}
+
+/* Esconde a sidebar em telas pequenas */
+@media (max-width: 1000px) {
+  .sidebar {
+    display: none;
+  }
+
+  .disc {
+    width: 70vw;
+    /* disco maior no mobile */
+  }
+
+  .tonearm img {
+    width: 200px;
+    /* braço proporcional */
+  }
+
+  /* Esconde a seta no mobile */
+  .seta {
+    display: none;
+  }
+
+  /* ----- BOTÕES EM LINHA NA PARTE DE BAIXO ----- */
+  .icon-btn {
+    position: static;
+    /* reseta posição absoluta */
+    margin: 0 10px;
+    padding: 16px;
+    background: rgba(128, 128, 128, .7);
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+
+  .icon-btn img {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Contêiner flex só no mobile */
+  .turntable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  /* Linha de botões na parte inferior */
+  .turntable::after {
+    content: "";
+    display: block;
+    flex-grow: 1;
+    /* empurra os botões para baixo */
+  }
+
+  .icon-btn.norte,
+  .icon-btn.sul,
+  .icon-btn.oeste,
+  .icon-btn.sudoeste {
+    top: auto;
+    left: auto;
+    transform: none;
+    /* reseta transformações */
+  }
+
+  .turntable {
+    gap: 12px;
+  }
+
+  .turntable .disc,
+  .turntable .tonearm {
+    margin-bottom: auto;
+    /* ficam acima */
+  }
+
+  /* Os botões ficam em linha no rodapé */
+  .turntable .icon-btn {
+    flex: 0 0 auto;
+  }
+
+  .turntable {
+    flex-direction: column;
+  }
+
+  .turntable-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .seta {
+    display: none;
+  }
+}
+
+/* Esconde a sidebar em telas pequenas */
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+
+  .disc {
+    width: 70vw;
+    /* disco maior no mobile */
+  }
+
+  .tonearm img {
+    width: 200px;
+    /* braço proporcional */
+  }
+
+  /* Esconde a seta no mobile */
+  .seta {
+    display: none;
+  }
+
+  /* ----- BOTÕES EM LINHA NA PARTE DE BAIXO ----- */
+  .icon-btn {
+    position: static;
+    /* reseta posição absoluta */
+    margin: 0 10px;
+    padding: 16px;
+    background: rgba(128, 128, 128, .7);
+    border: 2px solid #fff;
+    border-radius: 50%;
+  }
+
+  .icon-btn img {
+    width: 32px;
+    height: 32px;
+  }
+
+  /* Contêiner flex só no mobile */
+  .turntable {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    height: 100%;
+  }
+
+  /* Linha de botões na parte inferior */
+  .turntable::after {
+    content: "";
+    display: block;
+    flex-grow: 1;
+    /* empurra os botões para baixo */
+  }
+
+  .icon-btn.norte,
+  .icon-btn.sul,
+  .icon-btn.oeste,
+  .icon-btn.sudoeste {
+    top: auto;
+    left: auto;
+    transform: none;
+    /* reseta transformações */
+  }
+
+  .turntable {
+    gap: 12px;
+  }
+
+  .turntable .disc,
+  .turntable .tonearm {
+    margin-bottom: auto;
+    /* ficam acima */
+  }
+
+  /* Os botões ficam em linha no rodapé */
+  .turntable .icon-btn {
+    flex: 0 0 auto;
+  }
+
+  .turntable {
+    flex-direction: column;
+  }
+
+  .turntable-buttons {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    padding: 12px;
+    gap: 12px;
+  }
+
+  .seta {
+    display: none;
+  }
+}

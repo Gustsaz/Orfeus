@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Orfeus - Home</title>
+  <link rel="stylesheet" href="style.css">
+
+  <script src="https://unpkg.com/tone@14.8.39/build/Tone.js"></script>
+
+</head>
+
+<body oncontextmenu="return false">
+
+  <div class="sidebar">
+  </div>
+
+  <div class="container">
+    <img src="imgs/helipa_img.jpg" alt="Cidade de Helipa" class="background">
+
+    <div class="turntable">
+      <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
+
+      <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
+
+      <div class="turntable-buttons">
+
+        <button class="icon-btn norte">
+          <img src="imgs/afina_icon.png" alt="Afinação">
+        </button>
+
+        <button class="icon-btn sul">
+          <img src="imgs/course_icon.png" alt="Curso">
+        </button>
+
+        <button class="icon-btn sudoeste">
+          <img src="imgs/instru_icon.png" alt="Instrumentos">
+        </button>
+
+        <button class="icon-btn oeste">
+          <img src="imgs/rank_icon.png" alt="Ranking">
+        </button>
+      </div>
+    </div>
+
+    <div class="card card1">
+      <div class="tuner">
+        <div class="tuner-arc" id="tunerArc"></div>
+        <div class="tuner-note" id="tunerNote">--</div>
+        <button id="micToggle" class="mic-btn">
+          <img id="micIcon" src="imgs/mic_off_icon.png" alt="Microfone">
+        </button>
+      </div>
+
+      <button class="close-card">
+        <img src="imgs/close_icon.png" alt="Fechar">
+      </button>
+    </div>
+
+    <div class="card card2">
+      <button class="close-card">
+        <img src="imgs/close_icon.png" alt="Fechar">
+      </button>
+
+    </div>
+
+    <div class="card card3">
+      <button class="close-card"><img src="imgs/close_icon.png" alt="Fechar"></button>
+      <div id="virtual-piano-container">
+        <div id="virtual-piano">
+          <div class="white-keys"></div>
+          <div class="black-keys"></div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="card card4">
+      <button class="close-card">
+        <img src="imgs/close_icon.png" alt="Fechar">
+      </button>
+    </div>
+
+    <div class="tonearm">
+      <img src="imgs/tonearm_img.png" alt="Tonearm" draggable="false">
+    </div>
+  </div>
+
+  <div class="music-popup" id="musicPopup">
+    <p>Nome da Música - Artista</p>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+
+</html>
