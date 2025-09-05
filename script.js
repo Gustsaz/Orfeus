@@ -540,6 +540,7 @@ window.addEventListener("DOMContentLoaded", () => {
 const authUiContainer = document.getElementById("auth-ui");
 
 // Função para renderizar o estado de login
+// Função para renderizar o estado de login
 function renderAuthUi(user) {
     if (user) {
         // Usuário logado: mostra nome, foto e botão de logout
@@ -552,32 +553,52 @@ function renderAuthUi(user) {
         `;
         authUiContainer.innerHTML = userInfoHtml;
         document.getElementById("logout-btn").addEventListener("click", () => {
-            auth.signOut().then(() => {
-                console.log("Usuário desconectado.");
-            }).catch((error) => {
-                console.error("Erro ao sair:", error);
-            });
+            auth.signOut()
+                .then(() => console.log("Usuário desconectado."))
+                .catch((error) => console.error("Erro ao sair:", error));
         });
     } else {
         // Usuário não logado: mostra o botão de login
-        // no script.js
-const loginBtnHtml = `
-    <button id="google-login-btn">
-        <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
-    </button>
-`;
+        const loginBtnHtml = `
+            <button id="google-login-btn">
+                <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
+            </button>
+        `;
         authUiContainer.innerHTML = loginBtnHtml;
+
+        // --- Aqui está o ajuste ---
         document.getElementById("google-login-btn").addEventListener("click", () => {
             auth.signInWithPopup(provider)
                 .then((result) => {
                     const user = result.user;
-                    console.log("Usuário logado:", user.displayName);
-                }).catch((error) => {
-                    console.error("Erro de login:", error.message);
+                    console.log("Usuário logado (popup):", user.displayName);
+                })
+                .catch((error) => {
+                    console.warn("Erro no Popup:", error.code, error.message);
+
+                    // Fallback para Redirect
+                    if (error.code === "auth/operation-not-supported-in-this-environment" ||
+                        error.code === "auth/popup-blocked" ||
+                        error.code === "auth/popup-closed-by-user") {
+                        console.log("Tentando login com Redirect...");
+                        auth.signInWithRedirect(provider);
+                    }
                 });
         });
+
+        // Tratamento do resultado do Redirect
+        auth.getRedirectResult()
+            .then((result) => {
+                if (result.user) {
+                    console.log("Usuário logado via redirect:", result.user.displayName);
+                }
+            })
+            .catch((error) => {
+                console.error("Erro no Redirect:", error.message);
+            });
     }
 }
+
 
 // Ouve as mudanças no estado de autenticação
 auth.onAuthStateChanged((user) => {
