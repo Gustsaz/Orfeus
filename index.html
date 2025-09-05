@@ -13,7 +13,18 @@
 
 <body oncontextmenu="return false">
 
+
+  
   <div class="sidebar">
+
+    <div class="user-container">
+    <div id="auth-ui">
+        <button id="google-login-btn">
+            <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
+        </button>
+    </div>
+</div>
+
   </div>
 
   <div class="container">
@@ -43,6 +54,7 @@
         </button>
       </div>
     </div>
+    
 
     <div class="card card1">
       <div class="tuner">
@@ -90,6 +102,33 @@
   <div class="music-popup" id="musicPopup">
     <p>Nome da Música - Artista</p>
   </div>
+
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script>
+    // Sua configuração do Firebase. Pegue no console do projeto.
+   const firebaseConfig = {
+
+  apiKey: "AIzaSyCZ7am6qEWa5-X-12FCLkqU5X5QcEBkZ7s",
+
+  authDomain: "edutainment-db.firebaseapp.com",
+
+  projectId: "edutainment-db",
+
+  storageBucket: "edutainment-db.firebasestorage.app",
+
+  messagingSenderId: "86651784570",
+
+  appId: "1:86651784570:web:64a18f58ed5e5636711ac3",
+
+  measurementId: "G-FQ450KT41Q"
+
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const provider = new firebase.auth.GoogleAuthProvider();
+</script>
 
   <script src="script.js"></script>
 </body>
