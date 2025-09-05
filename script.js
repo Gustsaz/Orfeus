@@ -535,3 +535,51 @@ window.addEventListener("DOMContentLoaded", () => {
     );
   });
 });
+
+// Referências para os elementos HTML
+const authUiContainer = document.getElementById("auth-ui");
+
+// Função para renderizar o estado de login
+function renderAuthUi(user) {
+    if (user) {
+        // Usuário logado: mostra nome, foto e botão de logout
+        const userInfoHtml = `
+            <div id="user-info">
+                <img src="${user.photoURL}" alt="Foto de perfil">
+                <span>${user.displayName}</span>
+                <button id="logout-btn">Sair</button>
+            </div>
+        `;
+        authUiContainer.innerHTML = userInfoHtml;
+        document.getElementById("logout-btn").addEventListener("click", () => {
+            auth.signOut().then(() => {
+                console.log("Usuário desconectado.");
+            }).catch((error) => {
+                console.error("Erro ao sair:", error);
+            });
+        });
+    } else {
+        // Usuário não logado: mostra o botão de login
+        // no script.js
+const loginBtnHtml = `
+    <button id="google-login-btn">
+        <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
+    </button>
+`;
+        authUiContainer.innerHTML = loginBtnHtml;
+        document.getElementById("google-login-btn").addEventListener("click", () => {
+            auth.signInWithPopup(provider)
+                .then((result) => {
+                    const user = result.user;
+                    console.log("Usuário logado:", user.displayName);
+                }).catch((error) => {
+                    console.error("Erro de login:", error.message);
+                });
+        });
+    }
+}
+
+// Ouve as mudanças no estado de autenticação
+auth.onAuthStateChanged((user) => {
+    renderAuthUi(user);
+});
