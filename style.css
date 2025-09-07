@@ -787,3 +787,58 @@ body {
 #logout-btn:hover {
     background-color: #c9302c;
 }
+
+/* Ranking oculto */
+.ranking-panel {
+  position: absolute;
+  top: 50%;
+  left: 12%; /* ajusta para ficar perto do botão oeste */
+  transform: translateY(-50%);
+  background: rgba(0,0,0,0.85);
+  color: #fff;
+  padding: 15px;
+  border-radius: 10px;
+  width: 220px;
+  max-height: 300px;
+  overflow-y: auto;
+  box-shadow: 0 0 10px rgba(0,0,0,0.6);
+  z-index: 20;
+}
+
+.ranking-panel.hidden {
+  display: none;
+}
+
+#ranking-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+#ranking-table th,
+#ranking-table td {
+  border-bottom: 1px solid #555;
+  padding: 4px;
+  text-align: center;
+}
+
+.ranking-buttons {
+  margin-top: 10px;
+  display: flex;
+  gap: 5px;
+}
+
+.ranking-buttons button {
+  flex: 1;
+  padding: 5px;
+  background: #222;
+  color: #fff;
+  border: 1px solid #555;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+.ranking-buttons button:hover {
+  background: #444;
+}
+
