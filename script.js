@@ -604,3 +604,60 @@ function renderAuthUi(user) {
 auth.onAuthStateChanged((user) => {
     renderAuthUi(user);
 });
+
+const db = firebase.firestore();
+let currentUser = null;
+
+// Atualiza estado auth e garante doc no Firestore
+auth.onAuthStateChanged(async (user) => {
+  renderAuthUi(user);
+  if (user) {
+    currentUser = user;
+    const userRef = db.collection("ranking").doc(user.uid);
+    const snap = await userRef.get();
+    if (!snap.exists) {
+      await userRef.set({
+        name: user.displayName,
+        photo: user.photoURL,
+        score: 0
+      });
+    }
+  } else {
+    currentUser = null;
+  }
+});
+
+// Botões +1 e -1
+document.getElementById("btn-plus").addEventListener("click", () => updateScore(1));
+document.getElementById("btn-minus").addEventListener("click", () => updateScore(-1));
+
+async function updateScore(delta) {
+  if (!currentUser) return;
+  const userRef = db.collection("ranking").doc(currentUser.uid);
+  await userRef.update({
+    score: firebase.firestore.FieldValue.increment(delta)
+  });
+}
+
+// Escuta ranking em tempo real
+db.collection("ranking")
+  .orderBy("score", "desc")
+  .onSnapshot((snapshot) => {
+    const tbody = document.querySelector("#ranking-table tbody");
+    tbody.innerHTML = "";
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      const tr = document.createElement("tr");
+      tr.innerHTML = `
+        <td>${data.name}</td>
+        <td>${data.score}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+  });
+
+// Abre/fecha ranking ao clicar no botão oeste
+document.querySelector(".icon-btn.oeste").addEventListener("click", () => {
+  document.getElementById("ranking-panel").classList.toggle("hidden");
+});
+
