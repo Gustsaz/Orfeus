@@ -27,6 +27,7 @@
 
   </div>
 
+
   <div class="container">
     <img src="imgs/helipa_img.jpg" alt="Cidade de Helipa" class="background">
 
@@ -36,6 +37,8 @@
       <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
 
       <div class="turntable-buttons">
+
+        
 
         <button class="icon-btn norte">
           <img src="imgs/afina_icon.png" alt="Afinação">
@@ -54,6 +57,8 @@
         </button>
       </div>
     </div>
+
+    
     
 
     <div class="card card1">
@@ -92,6 +97,25 @@
       <button class="close-card">
         <img src="imgs/close_icon.png" alt="Fechar">
       </button>
+
+<div id="ranking-panel">
+  <h3>Ranking</h3>
+  <table id="ranking-table">
+    <thead>
+      <tr>
+        <th>Usuário</th>
+        <th>Pontos</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="ranking-buttons">
+    <button id="btn-plus">+1</button>
+    <button id="btn-minus">-1</button>
+  </div>
+</div>
+
     </div>
 
     <div class="tonearm">
@@ -102,6 +126,11 @@
   <div class="music-popup" id="musicPopup">
     <p>Nome da Música - Artista</p>
   </div>
+
+<!-- Painel do Ranking -->
+
+
+
 
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -130,6 +159,7 @@
     const provider = new firebase.auth.GoogleAuthProvider();
 </script>
 
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="script.js"></script>
 </body>
 
