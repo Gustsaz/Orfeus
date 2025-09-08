@@ -6,159 +6,126 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Orfeus - Home</title>
   <link rel="stylesheet" href="style.css">
-
   <script src="https://unpkg.com/tone@14.8.39/build/Tone.js"></script>
-
 </head>
 
-<body oncontextmenu="return false">
+<body>
+  <main class="main-panel">
 
-
-  
-  <div class="sidebar">
-
-    <div class="user-container">
-    <div id="auth-ui">
-        <button id="google-login-btn">
-            <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
-        </button>
-    </div>
-</div>
-
-  </div>
-
-
-  <div class="container">
-    <img src="imgs/helipa_img.jpg" alt="Cidade de Helipa" class="background">
-
-    <div class="turntable">
-      <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
-
-      <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
-
-      <div class="turntable-buttons">
-
-        
-
-        <button class="icon-btn norte">
-          <img src="imgs/afina_icon.png" alt="Afinação">
-        </button>
-
-        <button class="icon-btn sul">
-          <img src="imgs/course_icon.png" alt="Curso">
-        </button>
-
-        <button class="icon-btn sudoeste">
-          <img src="imgs/instru_icon.png" alt="Instrumentos">
-        </button>
-
-        <button class="icon-btn oeste">
-          <img src="imgs/rank_icon.png" alt="Ranking">
-        </button>
-      </div>
+    <!-- 🔹 Logo Placeholder -->
+    <div class="logo">
+      <h1>LOGO</h1>
     </div>
 
-    
-    
+    <!-- 🔹 Menu de abas -->
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="home">Homepage</button>
+      <button class="tab-btn" data-tab="afinador">Afinador</button>
+      <button class="tab-btn" data-tab="cursos">Cursos</button>
+      <button class="tab-btn" data-tab="instrumentos">Instrumentos</button>
+      <button class="tab-btn" data-tab="ranking">Ranking</button>
+    </nav>
 
-    <div class="card card1">
-      <div class="tuner">
-        <div class="tuner-arc" id="tunerArc"></div>
-        <div class="tuner-note" id="tunerNote">--</div>
-        <button id="micToggle" class="mic-btn">
-          <img id="micIcon" src="imgs/mic_off_icon.png" alt="Microfone">
-        </button>
-      </div>
+    <!-- 🔹 Container de conteúdo -->
+    <div class="tab-content">
 
-      <button class="close-card">
-        <img src="imgs/close_icon.png" alt="Fechar">
-      </button>
-    </div>
+      <!-- Homepage -->
+      <section class="tab-page active" id="home">
 
-    <div class="card card2">
-      <button class="close-card">
-        <img src="imgs/close_icon.png" alt="Fechar">
-      </button>
-
-    </div>
-
-    <div class="card card3">
-      <button class="close-card"><img src="imgs/close_icon.png" alt="Fechar"></button>
-      <div id="virtual-piano-container">
-        <div id="virtual-piano">
-          <div class="white-keys"></div>
-          <div class="black-keys"></div>
+        <div class="user-container">
+          <div id="auth-ui">
+            <button id="google-login-btn">
+              <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
+            </button>
+          </div>
         </div>
-      </div>
+
+        <div class="turntable">
+          <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
+          <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
+
+          <div class="turntable-buttons">
+            <button class="icon-btn norte"><img src="imgs/afina_icon.png" alt="Afinação"></button>
+            <button class="icon-btn sul"><img src="imgs/course_icon.png" alt="Curso"></button>
+            <button class="icon-btn sudoeste"><img src="imgs/instru_icon.png" alt="Instrumentos"></button>
+            <button class="icon-btn oeste"><img src="imgs/rank_icon.png" alt="Ranking"></button>
+          </div>
+        </div>
+
+        <div class="tonearm">
+          <img src="imgs/tonearm_img.png" alt="Tonearm" draggable="false">
+        </div>
+      </section>
+
+      <!-- Afinador -->
+      <section class="tab-page" id="afinador">
+        <div class="tuner" style="color:white; text-align:center; padding-top:40px;">
+          <div class="tuner-arc" id="tunerArc"></div>
+          <div class="tuner-note" id="tunerNote">--</div>
+          <button id="micToggle" class="mic-btn">
+            <img id="micIcon" src="imgs/mic_off_icon.png" alt="Microfone">
+          </button>
+        </div>
+      </section>
+
+      <!-- Cursos -->
+      <section class="tab-page" id="cursos"></section>
+
+      <!-- Instrumentos -->
+      <section class="tab-page" id="instrumentos">
+        <div id="virtual-piano-container">
+          <div id="virtual-piano">
+            <div class="white-keys"></div>
+            <div class="black-keys"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Ranking -->
+      <section class="tab-page" id="ranking">
+        <div id="ranking-panel" style="margin:40px auto; max-width:400px; color:white;">
+          <h3>Ranking</h3>
+          <table id="ranking-table">
+            <thead>
+              <tr>
+                <th>Usuário</th>
+                <th>Pontos</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+          <div class="ranking-buttons">
+            <button id="btn-plus">+1</button>
+            <button id="btn-minus">-1</button>
+          </div>
+        </div>
+      </section>
+
     </div>
 
-
-    <div class="card card4">
-      <button class="close-card">
-        <img src="imgs/close_icon.png" alt="Fechar">
-      </button>
-
-<div id="ranking-panel">
-  <h3>Ranking</h3>
-  <table id="ranking-table">
-    <thead>
-      <tr>
-        <th>Usuário</th>
-        <th>Pontos</th>
-      </tr>
-    </thead>
-    <tbody></tbody>
-  </table>
-
-  <div class="ranking-buttons">
-    <button id="btn-plus">+1</button>
-    <button id="btn-minus">-1</button>
-  </div>
-</div>
-
-    </div>
-
-    <div class="tonearm">
-      <img src="imgs/tonearm_img.png" alt="Tonearm" draggable="false">
-    </div>
-  </div>
+  </main>
 
   <div class="music-popup" id="musicPopup">
     <p>Nome da Música - Artista</p>
   </div>
 
-<!-- Painel do Ranking -->
-
-
-
-
+  <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-<script>
-    // Sua configuração do Firebase. Pegue no console do projeto.
-   const firebaseConfig = {
-
-  apiKey: "AIzaSyCZ7am6qEWa5-X-12FCLkqU5X5QcEBkZ7s",
-
-  authDomain: "edutainment-db.firebaseapp.com",
-
-  projectId: "edutainment-db",
-
-  storageBucket: "edutainment-db.firebasestorage.app",
-
-  messagingSenderId: "86651784570",
-
-  appId: "1:86651784570:web:64a18f58ed5e5636711ac3",
-
-  measurementId: "G-FQ450KT41Q"
-
-};
-
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZ7am6qEWa5-X-12FCLkqU5X5QcEBkZ7s",
+      authDomain: "edutainment-db.firebaseapp.com",
+      projectId: "edutainment-db",
+      storageBucket: "edutainment-db.firebasestorage.app",
+      messagingSenderId: "86651784570",
+      appId: "1:86651784570:web:64a18f58ed5e5636711ac3",
+      measurementId: "G-FQ450KT41Q"
+    };
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const provider = new firebase.auth.GoogleAuthProvider();
-</script>
-
+  </script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="script.js"></script>
 </body>

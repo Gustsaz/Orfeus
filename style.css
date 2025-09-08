@@ -1,3 +1,23 @@
+@font-face {
+  font-family: "ITCFranklin";
+  src: url("fonts/ITC_Franklin.otf") format("opentype");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "ITCFranklin";
+  src: url("fonts/ITC_FranklinBOLD.otf") format("opentype");
+  font-weight: bold;
+  font-style: normal;
+}
+
+
+* {
+  font-family: "ITCFranklin", "Franklin Gothic Medium", "Arial Narrow", Arial, sans-serif;
+}
+
+
 :root {
   --card-size: clamp(320px, 58vmin, 720px);
   --card-gap: clamp(20px, 4vmin, 56px);
@@ -208,145 +228,6 @@ body {
   z-index: 2;
 }
 
-/* -------------------- CARDS -------------------- */
-.card {
-  opacity: .3;
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: var(--card-size);
-  height: var(--card-size);
-  background: rgba(255, 255, 255, .08);
-  border: 2px solid rgba(255, 255, 255, .18);
-  border-radius: 16px;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-  pointer-events: none;
-  transition: height .42s ease, width .26s ease, transform .6s ease,
-    border-radius .3s ease, background .3s ease, opacity .3s ease;
-}
-
-
-.card.front {
-  z-index: 5;
-  opacity: 1;
-  transform: translate(-50%, -50%) rotate(0) scale(1.05)
-}
-
-/* Etapa 1: aumenta altura (centralizado) */
-.card.open-vertical {
-  height: 90vh;
-  width: var(--card-size);
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  transform-origin: center center;
-  /* cresce simétrico */
-}
-
-/* Etapa 2: abre horizontalmente */
-.card.open-horizontal {
-  width: 95vw;
-  /* ocupa quase a tela toda */
-  max-width: 1400px;
-  /* limite opcional, pode aumentar ou remover */
-  height: 90vh;
-  transform: translate(-50%, -50%);
-  /* mantém centralizado */
-  border-radius: 20px;
-  background: rgba(255, 255, 255, 0.25);
-  pointer-events: auto;
-}
-
-.close-card {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 20px;
-  /* 🔥 menor */
-  height: 20px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 10;
-  padding: 0;
-  display: none;
-  /* 🔥 escondido por padrão */
-}
-
-.card.open-horizontal .close-card {
-  display: block;
-  /* 🔥 aparece só quando o card estiver aberto */
-}
-
-.close-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-  pointer-events: none;
-}
-
-/* Leque + cores */
-.card1 {
-  transform: translate(-50%, -50%) rotate(-18deg) translate(calc(-1.5*var(--card-gap)), calc(-1.0*var(--card-gap)));
-  background: url("imgs/afina_album.png") center/cover no-repeat;
-}
-
-.card2 {
-  transform: translate(-50%, -50%) rotate(-6deg) translate(calc(-0.7*var(--card-gap)), calc(-0.3*var(--card-gap)));
-  background: url("imgs/cursos_album.png") center/cover no-repeat;
-}
-
-.card3 {
-  transform: translate(-50%, -50%) rotate(6deg) translate(calc(0.7*var(--card-gap)), calc(0.3*var(--card-gap)));
-  background: url("imgs/instru_album.png") center/cover no-repeat;
-}
-
-.card4 {
-  transform: translate(-50%, -50%) rotate(18deg) translate(calc(1.5*var(--card-gap)), calc(1.0*var(--card-gap)));
-  background: url("imgs/rank_album.png") center/cover no-repeat;
-}
-
-.card1.front,
-.card1.open-vertical,
-.card1.open-horizontal {
-  background: url("imgs/afina_album.png") center/cover no-repeat;
-}
-
-.card1.open-horizontal {
-  background: rgba(30, 144, 255, .25)
-}
-
-.card2.front,
-.card2.open-vertical,
-.card2.open-horizontal {
-  background: url("imgs/cursos_album.png") center/cover no-repeat;
-}
-
-.card2.open-horizontal {
-  background: rgba(60, 179, 113, .25)
-}
-
-.card3.front,
-.card3.open-vertical,
-.card3.open-horizontal {
-  background: url("imgs/instru_album.png") center/cover no-repeat;
-}
-
-.card3.open-horizontal {
-  background: rgba(255, 0, 0, .25)
-}
-
-.card4.front,
-.card4.open-vertical,
-.card4.open-horizontal {
-  background: url("imgs/rank_album.png") center/cover no-repeat;
-}
-
-.card4.open-horizontal {
-  background: rgba(255, 215, 0, .25)
-}
 
 /* Popup música */
 .music-popup {
@@ -372,8 +253,8 @@ body {
   right: -300px
 }
 
-.tuner {
-  display: none;
+#afinador .tuner {
+  display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
@@ -381,7 +262,10 @@ body {
   width: 100%;
   text-align: center;
   gap: 32px;
-  /* mais espaçamento */
+}
+
+#afinador .tuner {
+  color: #00ffea; /* texto azul claro neon */
 }
 
 .tuner-bar {
@@ -424,10 +308,6 @@ body {
   height: 48px;
 }
 
-/* Mostra o afinador somente quando o card1 estiver aberto */
-.card1.open-horizontal .tuner {
-  display: flex;
-}
 
 /* Contêiner da barra de marcadores */
 #tunerArc {
@@ -438,6 +318,23 @@ body {
   width: 100%;
   max-width: 500px;
   margin-bottom: 16px;
+}
+
+#tunerArc .marker {
+  background: #888; /* cinza claro */
+}
+
+#tunerArc .marker.center {
+  background: #00ffea; /* marcador central azul neon */
+}
+
+#tunerNote {
+  color: #00ffea; /* nota em destaque */
+  text-shadow: 0 0 10px #00ffff; /* brilho */
+}
+
+.mic-btn img {
+  filter: invert(100%); /* deixa ícone de microfone claro */
 }
 
 /* Cada marcador */
@@ -463,7 +360,7 @@ body {
   text-align: center;
 }
 
-#virtual-piano-container {
+#instrumentos #virtual-piano-container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -516,14 +413,6 @@ body {
 
 .key.black.active {
   background: #555; /* cinza mais escuro nas pretas */
-}
-
-.card3 #virtual-piano-container {
-  display: none;
-}
-
-.card3.open-horizontal #virtual-piano-container {
-  display: flex;
 }
 
 /* Esconde a sidebar em telas pequenas */
@@ -842,3 +731,90 @@ body {
   background: #444;
 }
 
+/* Painel principal preto */
+.main-panel {
+  background: black;
+  height: 100vh;
+  width: 80%;
+  margin: 0 auto;
+  position: relative;
+  z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* 🔹 alinhar conteúdo à esquerda */
+  padding-left: 40px;      /* 🔹 espaçamento lateral */
+  padding-top: 40px;       /* 🔹 espaço do teto */
+}
+
+/* Background da imagem atrás */
+body {
+  background: url("imgs/helipa_img.jpg") center/cover no-repeat fixed;
+}
+
+/* --- Logo --- */
+.logo {
+  margin-bottom: 30px; /* 🔹 espaçamento entre logo e menu */
+}
+
+.logo h1 {
+  color: white;
+  font-size: 40px; /* 🔹 maior */
+  font-weight: bold;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+/* --- Tabs estilo Underground HipHop --- */
+/* --- Tabs estilo Underground HipHop --- */
+.tabs {
+  display: flex;
+  justify-content: flex-start;
+  background: #000;
+  border-bottom: 4px solid #333;
+  margin-bottom: 20px;
+}
+
+.tab-btn {
+  background: #000;
+  color: #fff;
+  border: none;
+  border-right: 2px solid #333;
+  padding: 24px 36px;   /* 🔹 maior */
+  cursor: pointer;
+  font-size: 26px;      /* 🔹 fonte maior */
+  font-weight: 900;     /* 🔹 já começa bold */
+  text-transform: uppercase;
+  transition: background 0.3s, transform 0.2s, text-shadow 0.2s;
+}
+
+.tab-btn:last-child {
+  border-right: none;
+}
+
+.tab-btn:hover {
+  background: #222;
+}
+
+.tab-btn.active {
+  background: #333;
+  /* em vez de mudar o peso, destacamos com leve efeito */
+  transform: scale(1.05);
+  text-shadow: 0 0 6px rgba(255, 255, 255, 0.5);
+}
+
+.tab-content {
+  flex: 1;
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.tab-page {
+  display: none;
+  width: 100%;
+  height: 100%;
+}
+
+.tab-page.active {
+  display: block;
+}
