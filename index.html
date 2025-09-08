@@ -10,11 +10,22 @@
 </head>
 
 <body>
+  <div class="topbar">
+    <div class="ticker">NEWS — Bem-vindo ao Orfeus: novas aulas e desafios semanais!</div>
+  </div>
+
+  <header class="site-header">
+    <div class="brand">
+      <span class="brand-top">ORFEUS</span>
+      <span class="brand-sub">HIP HOP | EDU</span>
+    </div>
+  </header>
+
   <main class="main-panel">
 
     <!-- 🔹 Logo Placeholder -->
     <div class="logo">
-      <h1>LOGO</h1>
+      <h1>Orfeus</h1>
     </div>
 
     <!-- 🔹 Menu de abas -->
@@ -40,20 +51,43 @@
           </div>
         </div>
 
-        <div class="turntable">
-          <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
-          <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
-
-          <div class="turntable-buttons">
-            <button class="icon-btn norte"><img src="imgs/afina_icon.png" alt="Afinação"></button>
-            <button class="icon-btn sul"><img src="imgs/course_icon.png" alt="Curso"></button>
-            <button class="icon-btn sudoeste"><img src="imgs/instru_icon.png" alt="Instrumentos"></button>
-            <button class="icon-btn oeste"><img src="imgs/rank_icon.png" alt="Ranking"></button>
+        <div class="hero">
+          <h2>Teoria musical com flow</h2>
+          <p>Aprenda afinação, ritmo e harmonia no estilo hip hop digital.</p>
+          <div class="hero-ctas">
+            <button class="cta" onclick="switchTab('cursos')">Começar curso</button>
+            <button class="cta ghost" onclick="switchTab('instrumentos')">Abrir instrumentos</button>
           </div>
         </div>
 
-        <div class="tonearm">
-          <img src="imgs/tonearm_img.png" alt="Tonearm" draggable="false">
+        <div class="home-grid">
+          <aside class="home-left">
+            <section class="home-ranking">
+              <div class="ranking-tabs">
+                <button class="rk-btn active" data-period="all">Geral</button>
+                <button class="rk-btn" data-period="monthly">Mensal</button>
+                <button class="rk-btn" data-period="weekly">Semanal</button>
+              </div>
+              <table class="rk-table" id="homeRankingTable">
+                <thead>
+                  <tr><th>#</th><th>Usuário</th><th>Pontos</th></tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </section>
+          </aside>
+
+          <div class="home-right">
+            <div class="deck">
+              <div class="turntable">
+                <img src="imgs/disc_img.png" alt="Disco de Vinil" class="disc" id="disc" draggable="false">
+                <img src="imgs/seta_icon.png" alt="Seta" class="seta" id="seta" draggable="false">
+              </div>
+              <div class="tonearm">
+                <img src="imgs/tonearm_img.png" alt="Tonearm" draggable="false">
+              </div>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -62,6 +96,7 @@
         <div class="tuner" style="color:white; text-align:center; padding-top:40px;">
           <div class="tuner-arc" id="tunerArc"></div>
           <div class="tuner-note" id="tunerNote">--</div>
+          <div class="tuner-cents" id="tunerCents"></div>
           <button id="micToggle" class="mic-btn">
             <img id="micIcon" src="imgs/mic_off_icon.png" alt="Microfone">
           </button>
@@ -69,14 +104,58 @@
       </section>
 
       <!-- Cursos -->
-      <section class="tab-page" id="cursos"></section>
+      <section class="tab-page" id="cursos">
+        <div class="course-wrapper">
+          <div class="course-progress">
+            <div class="course-progress-bar" id="courseProgressBar"></div>
+            <span class="course-progress-text" id="courseProgressText">0% concluído</span>
+          </div>
+
+          <div class="modules">
+            <div class="module-card" data-module="1">
+              <div class="module-info">
+                <h4>Módulo 1 — Sons agudos e graves</h4>
+                <p>Iniciação à teoria musical: o que é altura, timbre e intensidade.</p>
+              </div>
+              <div class="module-actions">
+                <span class="module-status" data-status="pending">✕</span>
+                <button class="module-open">Abrir</button>
+              </div>
+            </div>
+
+            <div class="module-card" data-module="2">
+              <div class="module-info">
+                <h4>Módulo 2 — Identificação de som pelo instrumento</h4>
+                <p>Reconheça notas e timbres comparando diferentes instrumentos.</p>
+              </div>
+              <div class="module-actions">
+                <span class="module-status" data-status="pending">✕</span>
+                <button class="module-open">Abrir</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="lesson-panel hidden" id="lessonPanel">
+            <button class="lesson-close" id="lessonClose">Fechar</button>
+            <div class="lesson-content" id="lessonContent"></div>
+          </div>
+        </div>
+      </section>
 
       <!-- Instrumentos -->
       <section class="tab-page" id="instrumentos">
         <div id="virtual-piano-container">
-          <div id="virtual-piano">
-            <div class="white-keys"></div>
-            <div class="black-keys"></div>
+          <div class="instrument-selector">
+            <button class="inst-btn active" data-inst="piano">Piano Virtual</button>
+            <button class="inst-btn" data-inst="guitar">Violão Acústico Virtual</button>
+            <button class="inst-btn" data-inst="drums">Bateria</button>
+            <button class="inst-btn" data-inst="flute">Flauta</button>
+          </div>
+          <div id="instrument-area">
+            <div id="virtual-piano">
+              <div class="white-keys"></div>
+              <div class="black-keys"></div>
+            </div>
           </div>
         </div>
       </section>
