@@ -177,7 +177,20 @@ function switchTab(tabId) {
   const tabPage = document.getElementById(tabId);
 
   if (tabBtn) tabBtn.classList.add("active");
-  if (tabPage) tabPage.classList.add("active");
+  if (tabPage) {
+    tabPage.classList.add("active");
+    // aplica fade-in para filhos da página
+    Array.from(tabPage.children).forEach((el, idx) => {
+      el.classList.add('fade-in-load');
+      el.style.setProperty('--fade-delay', `${idx*60}ms`);
+    });
+    setTimeout(()=>{
+      Array.from(tabPage.children).forEach(el => {
+        el.classList.remove('fade-in-load');
+        el.style.removeProperty('--fade-delay');
+      });
+    }, 1200);
+  }
 }
 
 // --- Mapear botões do disco para abas ---
@@ -197,8 +210,107 @@ function goToTabFromButton(btn) {
 window.addEventListener("DOMContentLoaded", () => {
   const whiteKeysContainer = document.querySelector("#virtual-piano .white-keys");
   const blackKeysContainer = document.querySelector("#virtual-piano .black-keys");
+  const instButtons = document.querySelectorAll('.instrument-selector .inst-btn');
+  const rkButtons = document.querySelectorAll('.home-ranking .rk-btn');
+  const rkTableBody = document.querySelector('#homeRankingTable tbody');
+  const instrumentArea = document.getElementById('instrument-area');
+  const modulesRoot = document.querySelector('#cursos .modules');
+  const lessonPanel = document.getElementById('lessonPanel');
+  const lessonContent = document.getElementById('lessonContent');
+  const lessonClose = document.getElementById('lessonClose');
+  const courseBar = document.getElementById('courseProgressBar');
+  const courseText = document.getElementById('courseProgressText');
 
   if (!whiteKeysContainer || !blackKeysContainer) return;
+  // Ranking Firebase (coleção 'scores' com campos: user, points, period: 'all'|'monthly'|'weekly')
+  async function loadRanking(period){
+    try{
+      if (!window.firebase || !firebase.firestore) return;
+      const db = firebase.firestore();
+      let query = db.collection('scores');
+      if (period !== 'all') query = query.where('period','==',period);
+      query = query.orderBy('points','desc').limit(10);
+      const snap = await query.get();
+      const rows = [];
+      let pos=1;
+      snap.forEach(doc=>{
+        const d=doc.data();
+        rows.push(`<tr><td>${pos++}</td><td>${d.user||'Anônimo'}</td><td>${d.points||0}</td></tr>`);
+      });
+      if (rkTableBody) rkTableBody.innerHTML = rows.join('');
+    }catch(err){ console.error('Ranking error', err); }
+  }
+
+  if (rkButtons.length){
+    rkButtons.forEach(b=>{
+      b.addEventListener('click',()=>{
+        rkButtons.forEach(x=>x.classList.remove('active'));
+        b.classList.add('active');
+        const host = document.querySelector('.home-ranking');
+        if (host){ host.classList.add('fade-in-load'); setTimeout(()=> host.classList.remove('fade-in-load'), 450); }
+        loadRanking(b.dataset.period);
+      });
+    });
+    loadRanking('all');
+  }
+
+  // -------- Cursos (progresso simples em localStorage) --------
+  const PROGRESS_KEY = 'orfeus.course.progress';
+  function readProgress(){
+    try{ return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || { done: [] }; }catch{ return { done: [] }; }
+  }
+  function writeProgress(state){ localStorage.setItem(PROGRESS_KEY, JSON.stringify(state)); }
+  function updateProgressUI(){
+    const state = readProgress();
+    const total = 2;
+    const pct = Math.round((state.done.length/total)*100);
+    if (courseBar) courseBar.style.width = pct+"%";
+    if (courseText) courseText.textContent = pct+"% concluído";
+    document.querySelectorAll('#cursos .module-card').forEach(card=>{
+      const id = card.dataset.module;
+      const status = card.querySelector('.module-status');
+      if (state.done.includes(id)) { status.dataset.status='done'; status.textContent='✓'; }
+      else { status.dataset.status='pending'; status.textContent='✕'; }
+    });
+  }
+  function completeModule(id){
+    const state = readProgress();
+    if (!state.done.includes(id)) state.done.push(id);
+    writeProgress(state);
+    updateProgressUI();
+  }
+
+  function openLesson(id){
+    if (!lessonPanel || !lessonContent) return;
+    let html = '';
+    if (id==='1'){
+      html = `
+        <h3>Módulo 1 — Sons agudos e graves</h3>
+        <p>Altura é a percepção de <b>agudo</b> (frequências altas) e <b>grave</b> (frequências baixas).</p>
+        <p>Experimente no Afinador: fale notas mais agudas e graves para ver a mudança.</p>
+      `;
+    } else if (id==='2'){
+      html = `
+        <h3>Módulo 2 — Identificação de som pelo instrumento</h3>
+        <p>Use a aba Instrumentos e compare o mesmo <b>nome de nota</b> em timbres diferentes.
+        Tente diferenciar a <b>tessitura</b> (oitava) e o <b>timbre</b> (cor sonora).</p>
+      `;
+    }
+    lessonContent.innerHTML = html;
+    lessonPanel.classList.remove('hidden');
+  }
+  if (lessonClose){ lessonClose.addEventListener('click', ()=> lessonPanel.classList.add('hidden')); }
+  if (modulesRoot){
+    modulesRoot.querySelectorAll('.module-open').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const id = btn.closest('.module-card').dataset.module;
+        openLesson(id);
+        completeModule(id);
+      });
+    });
+    updateProgressUI();
+  }
+  const container = document.getElementById('virtual-piano');
 
   // Oitavas que queremos
   const startOctave = 3;
@@ -215,6 +327,10 @@ window.addEventListener("DOMContentLoaded", () => {
       key.classList.add("key", "white");
       key.dataset.note = `${note}${octave}`;
       key.style.left = `${keyIndex * 40}px`;
+      const label = document.createElement('div');
+      label.className = 'note-label';
+      label.textContent = `${note}${octave}`;
+      key.appendChild(label);
       whiteKeysContainer.appendChild(key);
       keyIndex++;
     });
@@ -225,12 +341,17 @@ window.addEventListener("DOMContentLoaded", () => {
       key.classList.add("key", "black");
       key.dataset.note = `${note}${octave}`;
       key.style.left = `${40 * (i + (octave - startOctave) * 7) + 26}px`;
+      const label = document.createElement('div');
+      label.className = 'note-label';
+      label.textContent = `${note}${octave}`;
+      key.appendChild(label);
       blackKeysContainer.appendChild(key);
     });
   }
 
   // --- Player com samples reais de piano ---
-  const sampler = new Tone.Sampler({
+  let currentInstrument = 'piano';
+  let sampler = new Tone.Sampler({
     urls: {
       "A0": "A0.mp3",
       "C1": "C1.mp3",
@@ -258,6 +379,48 @@ window.addEventListener("DOMContentLoaded", () => {
     release: 1,
     baseUrl: "https://tonejs.github.io/audio/salamander/"
   }).toDestination();
+
+  async function switchInstrument(inst){
+    currentInstrument = inst;
+    if (sampler) sampler.dispose();
+    if (inst === 'piano') {
+      sampler = new Tone.Sampler({
+        urls: { "A0": "A0.mp3","C1":"C1.mp3","D#1":"Ds1.mp3","F#1":"Fs1.mp3","A1":"A1.mp3","C2":"C2.mp3","D#2":"Ds2.mp3","F#2":"Fs2.mp3","A2":"A2.mp3","C3":"C3.mp3","D#3":"Ds3.mp3","F#3":"Fs3.mp3","A3":"A3.mp3","C4":"C4.mp3","D#4":"Ds4.mp3","F#4":"Fs4.mp3","A4":"A4.mp3","C5":"C5.mp3","D#5":"Ds5.mp3","F#5":"Fs5.mp3","A5":"A5.mp3","C6":"C6.mp3" },
+        release: 1,
+        baseUrl: "https://tonejs.github.io/audio/salamander/"
+      }).toDestination();
+    } else if (inst === 'guitar') {
+      sampler = new Tone.Sampler({
+        urls: { "C3": "C3.mp3", "E3": "E3.mp3", "G3": "G3.mp3", "C4": "C4.mp3", "E4":"E4.mp3", "G4":"G4.mp3" },
+        release: 2,
+        baseUrl: "https://tonejs.github.io/audio/berklee/guitar-acoustic/"
+      }).toDestination();
+    } else if (inst === 'drums') {
+      sampler = new Tone.Sampler({
+        urls: { "C1": "kick.mp3", "D1":"snare.mp3", "E1":"hihat.mp3" },
+        baseUrl: "https://tonejs.github.io/audio/drum-samples/CR78/"
+      }).toDestination();
+    } else if (inst === 'flute') {
+      sampler = new Tone.Sampler({
+        urls: { "C4": "C4.mp3", "E4":"E4.mp3", "G4":"G4.mp3", "C5":"C5.mp3" },
+        release: 2,
+        baseUrl: "https://tonejs.github.io/audio/berklee/flute/"
+      }).toDestination();
+    }
+  }
+
+  if (instButtons.length){
+    instButtons.forEach(btn => {
+      btn.addEventListener('click', async () => {
+        instButtons.forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        renderInstrumentUI(btn.dataset.inst);
+        await switchInstrument(btn.dataset.inst);
+      });
+    });
+    // render inicial explícito
+    renderInstrumentUI('piano');
+  }
 
   // Funções de tocar e parar notas
   function playNote(note) {
@@ -290,6 +453,7 @@ window.addEventListener("DOMContentLoaded", () => {
     lastKey = null;
   }
 
+  function attachKeyHandlers(){
   document.querySelectorAll("#virtual-piano .key").forEach(key => {
     key.addEventListener("mousedown", e => {
       isMouseDown = true;
@@ -311,11 +475,91 @@ window.addEventListener("DOMContentLoaded", () => {
     if (lastKey) deactivateKey(lastKey);
     isMouseDown = false;
   });
+  }
+  attachKeyHandlers();
+
+  function renderInstrumentUI(inst){
+    if (!instrumentArea) return;
+    instrumentArea.innerHTML = '';
+    if (inst === 'piano' || inst === 'guitar' || inst === 'flute'){
+      const vp = document.createElement('div');
+      vp.id = 'virtual-piano';
+      const white = document.createElement('div'); white.className='white-keys';
+      const black = document.createElement('div'); black.className='black-keys';
+      vp.appendChild(white); vp.appendChild(black);
+      instrumentArea.appendChild(vp);
+      // rebuild keys
+      buildKeyboard();
+      attachKeyHandlers();
+    }
+    if (inst === 'drums'){
+      const grid = document.createElement('div');
+      grid.id = 'drum-grid';
+      grid.style.display='grid';
+      grid.style.gridTemplateColumns='repeat(3, 100px)';
+      grid.style.gap='12px';
+      const pads = [
+        {label:'Kick', note:'C1'},
+        {label:'Snare', note:'D1'},
+        {label:'HiHat', note:'E1'},
+        {label:'Clap', note:'F1'},
+        {label:'Tom', note:'G1'},
+        {label:'Ride', note:'A1'}
+      ];
+      pads.forEach(p=>{
+        const b=document.createElement('button');
+        b.textContent=p.label;
+        b.style.padding='16px';
+        b.style.background='#1a1a1a';
+        b.style.color='#fff';
+        b.style.border='1px solid #262626';
+        b.style.cursor='pointer';
+        b.addEventListener('mousedown',()=>{ sampler.triggerAttackRelease(p.note,'8n'); });
+        grid.appendChild(b);
+      });
+      instrumentArea.appendChild(grid);
+    }
+  }
+
+  function buildKeyboard(){
+    const white = document.querySelector('#virtual-piano .white-keys');
+    const black = document.querySelector('#virtual-piano .black-keys');
+    if (!white || !black) return;
+    white.innerHTML=''; black.innerHTML='';
+    let keyIndex = 0;
+    for (let octave = startOctave; octave <= endOctave; octave++) {
+      whiteOrder.forEach((note) => {
+        const key = document.createElement('div');
+        key.classList.add('key','white');
+        key.dataset.note = `${note}${octave}`;
+        key.style.left = `${keyIndex * 40}px`;
+        const label = document.createElement('div');
+        label.className='note-label';
+        label.textContent = `${note}${octave}`;
+        key.appendChild(label);
+        white.appendChild(key);
+        keyIndex++;
+      });
+      blackOrder.forEach((note, i) => {
+        if (!note) return;
+        const key = document.createElement('div');
+        key.classList.add('key','black');
+        key.dataset.note = `${note}${octave}`;
+        key.style.left = `${40 * (i + (octave - startOctave) * 7) + 26}px`;
+        const label = document.createElement('div');
+        label.className='note-label';
+        label.textContent = `${note}${octave}`;
+        key.appendChild(label);
+        black.appendChild(key);
+      });
+    }
+  }
 });
 
 // --- Afinador ---
 const tunerArc = document.getElementById("tunerArc");
 const tunerNote = document.getElementById("tunerNote");
+const tunerCents = document.getElementById("tunerCents");
 const micToggle = document.getElementById("micToggle");
 const micIcon = document.getElementById("micIcon");
 
@@ -347,26 +591,28 @@ function freqToNote(freq) {
   const noteNames = ["C", "C#", "D", "D#", "E", "F",
                      "F#", "G", "G#", "A", "A#", "B"];
   const noteNum = Math.round(12 * Math.log2(freq / A4) + 69);
-  const note = noteNames[noteNum % 12]; // 🔹 só a nota
+  const note = noteNames[(noteNum % 12 + 12) % 12];
+  const octave = Math.floor(noteNum / 12) - 1;
   const noteFreq = A4 * Math.pow(2, (noteNum - 69) / 12);
-  const cents = Math.floor(1200 * Math.log2(freq / noteFreq));
-  return { note, cents };
+  const cents = Math.round(1200 * Math.log2(freq / noteFreq));
+  return { note, octave, cents };
 }
 
-function updateTunerDisplay(note, cents) {
-  tunerNote.textContent = note;
+function updateTunerDisplay(note, octave, cents) {
+  tunerNote.textContent = `${note}${octave}`;
+  if (tunerCents) tunerCents.textContent = `${cents > 0 ? '+' : ''}${cents} cents`;
 
   // reset
-  markers.forEach(m => m.style.background = "#555");
+  markers.forEach(m => m.style.background = "#2b2b2b");
 
   if (Math.abs(cents) < 5) {
-    markers[5].style.background = "lime"; // afinado
+    markers[5].style.background = "#ffffff"; // afinado
   } else {
     const steps = Math.min(5, Math.floor(Math.abs(cents) / 10));
     for (let i = 1; i <= steps; i++) {
       const idx = cents < 0 ? 5 - i : 5 + i;
       if (markers[idx]) {
-        markers[idx].style.background = i <= 2 ? "yellow" : "red";
+        markers[idx].style.background = i <= 2 ? "#999" : "#666";
       }
     }
   }
@@ -375,6 +621,15 @@ function updateTunerDisplay(note, cents) {
 function resetTuner() {
   tunerNote.textContent = "--";
   markers.forEach(m => m.style.background = "#555");
+}
+
+// Suavização simples de frequência
+let lastFreq = null;
+function smoothFreq(freq) {
+  if (lastFreq === null) { lastFreq = freq; return freq; }
+  const alpha = 0.2; // suavização exponencial
+  lastFreq = alpha * freq + (1 - alpha) * lastFreq;
+  return lastFreq;
 }
 
 function detectPitch() {
@@ -404,9 +659,10 @@ function detectPitch() {
   }
 
   if (bestOffset > -1) {
-    const freq = audioCtx.sampleRate / bestOffset;
-    const { note, cents } = freqToNote(freq);
-    updateTunerDisplay(note, cents);
+    const rawFreq = audioCtx.sampleRate / bestOffset;
+    const freq = smoothFreq(rawFreq);
+    const { note, octave, cents } = freqToNote(freq);
+    updateTunerDisplay(note, octave, cents);
   }
 
   requestAnimationFrame(detectPitch);
@@ -415,7 +671,7 @@ function detectPitch() {
 async function startMic() {
   try {
     stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-    audioCtx = new AudioContext();
+    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
     analyser = audioCtx.createAnalyser();
     analyser.fftSize = 2048;
     buffer = new Float32Array(analyser.fftSize);
