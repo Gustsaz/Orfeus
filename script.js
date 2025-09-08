@@ -776,3 +776,71 @@ micToggle.addEventListener("click", () => {
     stopMic();
   }
 });
+
+// --- Login com Google ---
+const loginBtn = document.getElementById("google-login-btn");
+const authUI = document.getElementById("auth-ui");
+const userInfo = document.createElement("div");
+userInfo.id = "user-info";
+
+function renderUser(user){
+  if (!user) {
+    // Usuário não logado
+    if (authUI) authUI.innerHTML = `
+      <button id="google-login-btn">
+        <img src="imgs/gmail.png" alt="Google Logo"> Entrar com Google
+      </button>
+    `;
+    const btn = document.getElementById("google-login-btn");
+    if (btn) btn.addEventListener("click", googleLogin);
+  } else {
+    // Usuário logado
+    if (authUI) {
+      authUI.innerHTML = `
+        <div id="user-info">
+          <img src="${user.photoURL || 'imgs/user.png'}" alt="Foto">
+          <span>${user.displayName || "Usuário"}</span>
+          <button id="logout-btn">Sair</button>
+        </div>
+      `;
+      const logoutBtn = document.getElementById("logout-btn");
+      if (logoutBtn) logoutBtn.addEventListener("click", googleLogout);
+    }
+  }
+}
+
+async function googleLogin(){
+  try {
+    const result = await auth.signInWithPopup(provider);
+    const user = result.user;
+
+    // 🔹 Salva/atualiza usuário no Firestore
+    if (firebase.firestore) {
+      const db = firebase.firestore();
+      await db.collection("users").doc(user.uid).set({
+        name: user.displayName,
+        email: user.email,
+        photo: user.photoURL,
+        lastLogin: firebase.firestore.FieldValue.serverTimestamp()
+      }, { merge: true });
+    }
+
+    renderUser(user);
+  } catch(err){
+    console.error("Erro no login:", err);
+  }
+}
+
+async function googleLogout(){
+  try {
+    await auth.signOut();
+    renderUser(null);
+  } catch(err){
+    console.error("Erro no logout:", err);
+  }
+}
+
+// 🔹 Monitorar login automaticamente
+auth.onAuthStateChanged(user => {
+  renderUser(user);
+});
