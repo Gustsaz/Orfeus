@@ -176,7 +176,7 @@ window.addEventListener("DOMContentLoaded", () => {
   function writeProgress(state) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(state)); }
   function updateProgressUI() {
     const state = readProgress();
-    const total = 2;
+    const total = document.querySelectorAll('#cursos .module-card').length;
     const pct = Math.round((state.done.length / total) * 100);
     if (courseBar) courseBar.style.width = pct + "%";
     if (courseText) courseText.textContent = pct + "% concluído";
@@ -241,11 +241,429 @@ window.addEventListener("DOMContentLoaded", () => {
       `;
     } else if (id === '2') {
       html = `
-        <h3>Módulo 2 — Identificação de som pelo instrumento</h3>
-        <p>Use a aba Instrumentos e compare o mesmo <b>nome de nota</b> em timbres diferentes.
-        Tente diferenciar a <b>tessitura</b> (oitava) e o <b>timbre</b> (cor sonora).</p>
-      `;
-    }
+    <h3>Módulo 2 — Propriedades do Som</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/f41tpo96xhc" 
+        title="Propriedades do Som" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <p>O som possui <b>cinco propriedades fundamentais</b> que usamos para entender e organizar a música:</p>
+    <ul>
+      <li><b>Duração</b> → tempo que o som permanece soando.</li>
+      <li><b>Pulsação</b> → batida regular que sentimos em uma música.</li>
+      <li><b>Ritmo</b> → organização dos sons e silêncios no tempo.</li>
+      <li><b>Intensidade</b> → volume, se o som é forte ou fraco.</li>
+      <li><b>Altura</b> → se o som é grave ou agudo.</li>
+      <li><b>Timbre</b> → “cor” do som, o que diferencia instrumentos tocando a mesma nota.</li>
+    </ul>
+    <p>Essas propriedades, juntas, tornam possível reconhecer, diferenciar e criar músicas.</p>
+
+    <div id="startQuiz2" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn2" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz2" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Propriedades do Som</h4>
+      <p id="quiz2-timer">Tempo restante: 60s</p>
+      <div id="quiz2-question"></div>
+      <div id="quiz2-options" style="margin-top:12px;"></div>
+      <p id="quiz2-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else if (id === '3') {
+      html = `
+    <h3>Módulo 3 — Ritmo</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/TWu3JdFjgbM"
+        title="O que é Ritmo?" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <p>O <b>ritmo</b> é a organização dos sons e silêncios no tempo.</p>
+    <ul>
+      <li><b>Pulsação</b> → a batida constante que sentimos numa música.</li>
+      <li><b>Compasso</b> → a divisão da pulsação em grupos regulares.</li>
+      <li><b>Ritmo</b> → a variação e combinação de sons curtos, longos e pausas.</li>
+    </ul>
+    <p>O ritmo é um dos principais elementos que dá identidade às músicas, especialmente no hip hop.</p>
+
+    <div id="startQuiz3" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn3" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz3" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Ritmo</h4>
+      <p id="quiz3-timer">Tempo restante: 60s</p>
+      <div id="quiz3-question"></div>
+      <div id="quiz3-options" style="margin-top:12px;"></div>
+      <p id="quiz3-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else if (id === '4') {
+      html = `
+    <h3>Módulo 4 — Tons e Semitons</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/HIeHQ4V6x5I"
+        title="Tons e Semitons Explicados" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <p>Na música, usamos <b>tons</b> e <b>semitons</b> para medir a distância entre notas:</p>
+    <ul>
+      <li><b>Semi-tom</b> → é a menor distância possível entre duas notas (ex: Mi → Fá, Si → Dó).</li>
+      <li><b>Tom</b> → equivale a dois semitons (ex: Dó → Ré, Fá → Sol).</li>
+    </ul>
+    <p>Esses intervalos são a base para escalas, melodias e harmonia.</p>
+
+    <div id="startQuiz4" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn4" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz4" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Tons e Semitons</h4>
+      <p id="quiz4-timer">Tempo restante: 60s</p>
+      <div id="quiz4-question"></div>
+      <div id="quiz4-options" style="margin-top:12px;"></div>
+      <p id="quiz4-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else if (id === '5') {
+      html = `
+    <h3>Módulo 5 — Escala Maior</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/eoJhf_dzWKg"
+        title="Escala Maior Explicada" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <p>A <b>escala maior</b> é uma das mais usadas na música.  
+    Ela é formada por uma sequência de <b>tons</b> e <b>semitons</b> (relembrando o Módulo 4):</p>
+
+    <p><b>Padrão:</b> Tom – Tom – Semitom – Tom – Tom – Tom – Semitom</p>
+
+    <p><b>Exemplo da Escala de Dó Maior:</b></p>
+    <ul>
+      <li>Dó → Ré (Tom)</li>
+      <li>Ré → Mi (Tom)</li>
+      <li>Mi → Fá (Semitom)</li>
+      <li>Fá → Sol (Tom)</li>
+      <li>Sol → Lá (Tom)</li>
+      <li>Lá → Si (Tom)</li>
+      <li>Si → Dó (Semitom)</li>
+    </ul>
+
+    <p>Essa é a escala mais comum para iniciantes, pois usa apenas as teclas brancas do piano 🎹.</p>
+
+    <div id="startQuiz5" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn5" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz5" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Escala Maior</h4>
+      <p id="quiz5-timer">Tempo restante: 60s</p>
+      <div id="quiz5-question"></div>
+      <div id="quiz5-options" style="margin-top:12px;"></div>
+      <p id="quiz5-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else if (id === '6') {
+      html = `
+    <h3>Módulo 6 — Escala Menor</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/yeF_QxjP8mE"
+        title="Escala Menor Explicada" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <p>A <b>escala menor natural</b> tem uma sonoridade mais triste ou melancólica, em contraste com a escala maior.</p>
+
+    <p><b>Padrão:</b> Tom – Semitom – Tom – Tom – Semitom – Tom – Tom</p>
+
+    <p><b>Exemplo da Escala de Lá Menor (relativa da Dó Maior):</b></p>
+    <ul>
+      <li>Lá → Si (Tom)</li>
+      <li>Si → Dó (Semitom)</li>
+      <li>Dó → Ré (Tom)</li>
+      <li>Ré → Mi (Tom)</li>
+      <li>Mi → Fá (Semitom)</li>
+      <li>Fá → Sol (Tom)</li>
+      <li>Sol → Lá (Tom)</li>
+    </ul>
+
+    <p>Perceba que a escala de <b>Lá menor natural</b> usa as mesmas notas da escala de <b>Dó maior</b>, mas começa do Lá.</p>
+
+    <div id="startQuiz6" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn6" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz6" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Escala Menor</h4>
+      <p id="quiz6-timer">Tempo restante: 60s</p>
+      <div id="quiz6-question"></div>
+      <div id="quiz6-options" style="margin-top:12px;"></div>
+      <p id="quiz6-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else if (id === '7') {
+      html = `
+    <h3>Módulo 7 — Figuras Musicais</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/CmSG6rGlfVQ"
+        title="Figuras Musicais" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:20px;">
+      <img src="imgs/figs_img.png" alt="Figuras Musicais" 
+           style="max-width:300px; border:1px solid #333; border-radius:8px;">
+      <div>
+        <p>As <b>figuras musicais</b> representam a <b>duração</b> de um som ou silêncio.</p>
+
+        <p>Cada figura possui uma <b>estrutura</b>:</p>
+        <ul>
+          <li><b>Cabeça</b> → parte oval, pode ser vazada (semibreve) ou preenchida (semínima, colcheia, etc.).</li>
+          <li><b>Haste</b> → traço vertical ligado à cabeça, usado em figuras de menor duração.</li>
+          <li><b>Colchetes ou bandeirolas</b> → pequenos traços curvos ligados à haste, que indicam divisões menores (colcheia, semicolcheia, etc.).</li>
+        </ul>
+
+        <p>Na tabela ao lado estão as principais figuras de som, suas durações em tempos e os símbolos de silêncio correspondentes.</p>
+      </div>
+    </div>
+
+    <div id="startQuiz7" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn7" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz7" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Figuras Musicais</h4>
+      <p id="quiz7-timer">Tempo restante: 60s</p>
+      <div id="quiz7-question"></div>
+      <div id="quiz7-options" style="margin-top:12px;"></div>
+      <p id="quiz7-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else if (id === '8') {
+      html = `
+    <h3>Módulo 8 — Melhorando o Ritmo</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/1pUuZxyuE3c"
+        title="Ritmo Musical Avançado" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <p>Agora que você já conhece o <b>ritmo básico</b>, vamos avançar utilizando figuras como a 
+    <b>semínima</b> (1 tempo) e a <b>semínima pontuada</b> (1 tempo e meio).</p>
+
+    <ul>
+      <li><b>Semínima</b> → dura exatamente 1 tempo.</li>
+      <li><b>Semínima pontuada</b> → recebe um ponto ao lado, aumentando sua duração em metade do valor (1 + ½ = 1,5 tempos).</li>
+    </ul>
+
+    <p>Também precisamos entender a diferença entre <b>ritmos simples</b> e <b>ritmos compostos</b>:</p>
+    <ul>
+      <li><b>Ritmos simples</b> → dividem o tempo em 2 partes iguais (ex: compasso 2/4 ou 4/4).</li>
+      <li><b>Ritmos compostos</b> → dividem o tempo em 3 partes iguais (ex: compasso 6/8).</li>
+    </ul>
+
+    <p>Com isso, você poderá ler e executar <b>ritmos mais variados e dinâmicos</b>, unindo figuras diferentes para criar padrões musicais mais interessantes.</p>
+
+    <div id="startQuiz8" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn8" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz8" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Ritmo Avançado</h4>
+      <p id="quiz8-timer">Tempo restante: 60s</p>
+      <div id="quiz8-question"></div>
+      <div id="quiz8-options" style="margin-top:12px;"></div>
+      <p id="quiz8-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+    } else // ---------------- MÓDULO 9 ----------------
+      if (id === '9') {
+        html = `
+    <h3>Módulo 9 — Claves Musicais</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/cTG0gdJgDhc" 
+        title="Claves Musicais - Sol, Fá e Dó" frameborder="0" allowfullscreen></iframe>
+    </div>
+    <div style="display:flex; gap:20px; align-items:flex-start;">
+      <img src="imgs/clave_img.png" alt="Claves Musicais" style="max-width:300px; border:1px solid #333; border-radius:6px;">
+      <div>
+        <p>As <b>claves</b> são símbolos usados no início da pauta musical para indicar a altura das notas.</p>
+        <ul>
+          <li><b>Clave de Sol</b> → a mais utilizada, posiciona a nota <b>Sol</b> na segunda linha da pauta. Muito usada para instrumentos como violino, flauta, guitarra e piano (mão direita).</li>
+          <li><b>Clave de Fá</b> → posiciona a nota <b>Fá</b> na quarta linha. Muito usada para instrumentos graves como contrabaixo, fagote, trombone e piano (mão esquerda).</li>
+          <li><b>Clave de Dó</b> → posiciona o <b>Dó</b> central em diferentes linhas, dependendo da versão (soprano, contralto, tenor). Usada em instrumentos como viola.</li>
+        </ul>
+        <p>A <b>clave de Sol</b> é a mais importante para iniciantes, pois é a base para a maioria dos instrumentos e para a leitura musical no geral.</p>
+      </div>
+    </div>
+
+    <div id="startQuiz9" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn9" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz9" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Claves Musicais</h4>
+      <p id="quiz9-timer">Tempo restante: 60s</p>
+      <div id="quiz9-question"></div>
+      <div id="quiz9-options" style="margin-top:12px;"></div>
+      <p id="quiz9-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+      } else if (id === '10') {
+        html = `
+    <h3>Módulo 10 — Compasso</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/lVv4zFScKDo"
+        title="Compasso Musical" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:20px;">
+      <img src="imgs/compasso_img.jpg" alt="Compasso" 
+           style="max-width:300px; border:1px solid #333; border-radius:8px;">
+      <div>
+        <p>O <b>compasso</b> organiza os tempos da música em grupos regulares, facilitando a leitura e execução.</p>
+
+        <p>👉 Tipos principais:</p>
+        <ul>
+          <li><b>Binário</b> — 2 tempos (ex: 2/4)</li>
+          <li><b>Ternário</b> — 3 tempos (ex: 3/4)</li>
+          <li><b>Quaternário</b> — 4 tempos (ex: 4/4, o mais comum)</li>
+        </ul>
+
+        <p>O compasso é indicado no início da partitura como uma fórmula de fração, onde o número superior indica quantos tempos há, e o inferior qual figura representa o tempo.</p>
+      </div>
+    </div>
+
+    <div id="startQuiz10" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn10" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz10" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Compassos</h4>
+      <p id="quiz10-timer">Tempo restante: 60s</p>
+      <div id="quiz10-question"></div>
+      <div id="quiz10-options" style="margin-top:12px;"></div>
+      <p id="quiz10-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+      } else if (id === '11') {
+        html = `
+    <h3>Módulo 11 — Acidentes Musicais</h3>
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315" src="https://www.youtube.com/embed/5lE0oWgqS_M"
+        title="Acidentes Musicais" frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:20px;">
+      <img src="imgs/acidentes_img.png" alt="Acidentes Musicais" 
+           style="max-width:300px; border:1px solid #333; border-radius:8px;">
+      <div>
+        <p>Os <b>acidentes musicais</b> são símbolos usados para alterar a altura natural de uma nota.</p>
+        <ul>
+          <li><b>Sustenido (♯)</b> → eleva a nota em 1 semitom.</li>
+          <li><b>Bemol (♭)</b> → abaixa a nota em 1 semitom.</li>
+          <li><b>Bequadro (♮)</b> → cancela o efeito de sustenidos ou bemóis anteriores.</li>
+        </ul>
+        <p>Os acidentes podem aparecer isolados em notas ou na <b>armadura de clave</b>, indicando alterações válidas para toda a música.</p>
+      </div>
+    </div>
+
+    <div id="startQuiz11" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn11" style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz11" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz sobre Acidentes Musicais</h4>
+      <p id="quiz11-timer">Tempo restante: 60s</p>
+      <div id="quiz11-question"></div>
+      <div id="quiz11-options" style="margin-top:12px;"></div>
+      <p id="quiz11-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+      } else if (id === '12') {
+        html = `
+    <h3>Módulo 12 — Armadura de Clave</h3>
+
+    <div style="margin:16px 0;">
+      <iframe width="100%" height="315"
+        src="https://www.youtube.com/embed/3B8qv0aVZ0c"
+        title="Armadura de Clave — Guia Completo"
+        frameborder="0" allowfullscreen></iframe>
+    </div>
+
+    <div style="display:flex; align-items:flex-start; gap:16px; margin-bottom:20px;">
+      <img src="imgs/armadura_img.jpg" alt="Armadura de Clave / Círculo das Quintas"
+           style="max-width:300px; border:1px solid #333; border-radius:8px;">
+      <div>
+        <p>A <b>armadura de clave</b> é o conjunto de <b>sustenidos (♯)</b> e <b>bemóis (♭)</b> escrito após a clave, no início do pentagrama.
+        Ela indica quais notas serão alteradas <b>durante toda a peça</b> (até que haja mudança de armadura).</p>
+
+        <h4 style="margin-top:10px;">1) Ordem dos acidentes</h4>
+        <p><b>Sustenidos (♯):</b> Fá♯, Dó♯, Sol♯, Ré♯, Lá♯, Mi♯, Si♯ (memória: <i>F C G D A E B</i>).</p>
+        <p><b>Bemóis (♭):</b> Si♭, Mi♭, Lá♭, Ré♭, Sol♭, Dó♭, Fá♭ (memória: <i>B E A D G C F</i>).</p>
+
+        <h4 style="margin-top:10px;">2) Como identificar a tonalidade maior pela armadura</h4>
+        <ul>
+          <li><b>Com sustenidos:</b> pegue o <b>último sustenido</b> e suba <b>meio tom</b>. Ex.: último ♯ é Sol♯ → tonalidade <b>Lá Maior</b>.</li>
+          <li><b>Com bemóis:</b> a tonalidade é o <b>penúltimo bemol</b>. Ex.: armadura com Si♭ e Mi♭ → <b>Si♭ Maior</b>.
+              <br><b>Exceção:</b> se houver apenas <b>um bemol</b> (Si♭), a tonalidade é <b>Fá Maior</b>.</li>
+          <li><b>Sem acidentes:</b> <b>Dó Maior</b> (relativa: <b>Lá menor</b>).</li>
+        </ul>
+
+        <h4 style="margin-top:10px;">3) Relativas menores</h4>
+        <p>Para achar a menor relativa de uma tonalidade maior, desça <b>1 tom e meio</b> (ou conte 6 graus).
+           Ex.: Dó Maior → <b>Lá menor</b>; Mi♭ Maior → <b>Dó menor</b>. As duas compartilham a mesma armadura.</p>
+
+        <h4 style="margin-top:10px;">4) Círculo das Quintas</h4>
+        <p>Seguindo quintas ascendentes, adicionamos ♯ (G, D, A, E, B, F♯, C♯). Em quintas descendentes, adicionamos ♭ (F, B♭, E♭, A♭, D♭, G♭, C♭).
+        Esse círculo organiza <b>afinidades tonais</b>, progressões e <b>modulações</b>.</p>
+
+        <h4 style="margin-top:10px;">5) Boas práticas de leitura</h4>
+        <ul>
+          <li>Acidentes da armadura valem para todas as oitavas e linhas (salvo indicação de bequadro ♮).</li>
+          <li>Mudança de tonalidade: uma nova armadura aparece após barra dupla; vale a partir daquele compasso.</li>
+          <li><i>Cortesias</i> (acidentes entre parênteses) podem aparecer para facilitar a leitura.</li>
+        </ul>
+
+        <h4 style="margin-top:10px;">6) Exemplos rápidos</h4>
+        <ul>
+          <li><b>G Maior</b>: 1 ♯ (Fá♯) — relativa: <b>Em</b>.</li>
+          <li><b>D Maior</b>: 2 ♯ (Fá♯, Dó♯) — relativa: <b>Bm</b>.</li>
+          <li><b>F Maior</b>: 1 ♭ (Si♭) — relativa: <b>Dm</b>.</li>
+          <li><b>E♭ Maior</b>: 3 ♭ (Si♭, Mi♭, Lá♭) — relativa: <b>Cm</b>.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div id="startQuiz12" style="margin-top:30px; text-align:center;">
+      <button id="startQuizBtn12"
+        style="padding:20px 32px; font-size:22px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+        Iniciar Quiz Completo (10 questões)
+      </button>
+    </div>
+
+    <div id="fullQuiz12" style="display:none; margin-top:20px; padding:16px; border:1px solid #333; border-radius:8px;">
+      <h4>Quiz — Armadura de Clave</h4>
+      <p id="quiz12-timer">Tempo restante: 60s</p>
+      <div id="quiz12-question"></div>
+      <div id="quiz12-options" style="margin-top:12px;"></div>
+      <p id="quiz12-feedback" style="margin-top:10px;"></p>
+    </div>
+  `;
+      }
+
     lessonContent.innerHTML = html;
 
     // Quiz completo do módulo 1
@@ -341,6 +759,1147 @@ window.addEventListener("DOMContentLoaded", () => {
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
         }
+        showQuestion();
+      }
+    }
+
+    // Quiz completo do módulo 2
+    if (id === '2') {
+      const startBtn2 = document.getElementById("startQuizBtn2");
+      const quizBox2 = document.getElementById("fullQuiz2");
+
+      const quizQuestions2 = [
+        { q: "Qual propriedade define se um som é longo ou curto?", options: ["Duração", "Altura", "Intensidade"], correct: 0 },
+        { q: "A batida constante de uma música é chamada de:", options: ["Pulsação", "Timbre", "Altura"], correct: 0 },
+        { q: "A organização de sons e silêncios no tempo é:", options: ["Ritmo", "Intensidade", "Duração"], correct: 0 },
+        { q: "Se um som é muito forte ou muito fraco, estamos falando de:", options: ["Timbre", "Intensidade"], correct: 1 },
+        { q: "Quando um som é grave ou agudo, falamos de:", options: ["Altura", "Duração"], correct: 0 },
+        { q: "O que diferencia a mesma nota tocada no violão e no piano?", options: ["Intensidade", "Timbre", "Ritmo"], correct: 1 },
+        { q: "O bumbo de bateria é percebido como:", options: ["Som de altura grave", "Som de altura aguda"], correct: 0 },
+        { q: "Um apito é percebido como:", options: ["Som de altura aguda", "Som de altura grave"], correct: 0 },
+        { q: "Um crescendo (ficar cada vez mais forte) é variação de:", options: ["Duração", "Intensidade"], correct: 1 },
+        { q: "Se duas pessoas cantam a mesma nota, mas uma soa mais aguda e outra mais grave, isso é diferença de:", options: ["Altura", "Timbre"], correct: 0 }
+      ];
+
+
+      if (startBtn2) {
+        startBtn2.addEventListener("click", () => {
+          startBtn2.style.display = "none";
+          quizBox2.style.display = "block";
+          startFullQuiz2();
+        });
+      }
+
+
+      function startFullQuiz2() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz2-timer");
+        const qEl = document.getElementById("quiz2-question");
+        const optsEl = document.getElementById("quiz2-options");
+        const feedbackEl = document.getElementById("quiz2-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz2(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions2.length) { finishQuiz2(); return; }
+          const q = quizQuestions2[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+            btn.style.transition = "all 0.25s ease";
+
+            btn.addEventListener("mouseenter", () => btn.style.background = "#444");
+            btn.addEventListener("mouseleave", () => { if (!btn.disabled) btn.style.background = "#222"; });
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz2() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    // Quiz completo do módulo 3
+    if (id === '3') {
+      const startBtn3 = document.getElementById("startQuizBtn3");
+      const quizBox3 = document.getElementById("fullQuiz3");
+
+      const quizQuestions3 = [
+        { q: "O que é ritmo na música?", options: ["A velocidade da música", "A organização dos sons no tempo"], correct: 1 },
+        { q: "A batida constante que sentimos em uma música é chamada de:", options: ["Pulsação", "Timbre"], correct: 0 },
+        { q: "O compasso serve para:", options: ["Organizar as pulsações em grupos", "Definir a altura do som"], correct: 0 },
+        { q: "Se uma música tem 4 batidas por compasso, chamamos de:", options: ["Compasso quaternário", "Compasso ternário"], correct: 0 },
+        { q: "As pausas fazem parte do ritmo?", options: ["Sim", "Não"], correct: 0 },
+        { q: "Quando uma música acelera, dizemos que o:", options: ["Ritmo mudou", "Tempo mudou"], correct: 1 },
+        { q: "O rap é conhecido por seu forte uso de:", options: ["Ritmo e rima", "Escalas maiores"], correct: 0 },
+        { q: "As figuras rítmicas (semínima, colcheia, etc) representam:", options: ["A duração dos sons", "A altura dos sons"], correct: 0 },
+        { q: "Quando várias pessoas batem palmas juntas seguindo a mesma batida, estão seguindo a:", options: ["Intensidade", "Pulsação"], correct: 1 },
+        { q: "O ritmo é um elemento essencial especialmente no:", options: ["Hip hop", "Música clássica somente"], correct: 0 }
+      ];
+
+      if (startBtn3) {
+        startBtn3.addEventListener("click", () => {
+          startBtn3.style.display = "none";
+          quizBox3.style.display = "block";
+          startFullQuiz3();
+        });
+      }
+
+      function startFullQuiz3() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz3-timer");
+        const qEl = document.getElementById("quiz3-question");
+        const optsEl = document.getElementById("quiz3-options");
+        const feedbackEl = document.getElementById("quiz3-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz3(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions3.length) { finishQuiz3(); return; }
+          const q = quizQuestions3[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz3() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '4') {
+      const startBtn4 = document.getElementById("startQuizBtn4");
+      const quizBox4 = document.getElementById("fullQuiz4");
+
+      const quizQuestions4 = [
+        { q: "O que é um semitom?", options: ["A menor distância entre notas", "Dois tons juntos"], correct: 0 },
+        { q: "Um tom equivale a:", options: ["1 semitom", "2 semitons"], correct: 1 },
+        { q: "Qual desses pares é separado por um semitom?", options: ["Dó → Ré", "Mi → Fá"], correct: 1 },
+        { q: "Qual desses pares é separado por um tom?", options: ["Dó → Ré", "Si → Dó"], correct: 0 },
+        { q: "Se Dó → Ré é um tom, então Dó → Ré♭ é:", options: ["Um semitom", "Um tom"], correct: 0 },
+        { q: "O intervalo entre Fá → Sol é:", options: ["Tom", "Semitom"], correct: 0 },
+        { q: "O intervalo entre Si → Dó é:", options: ["Semitom", "Tom"], correct: 0 },
+        { q: "Para subir um tom de Dó, chegamos em:", options: ["Dó# (Dó sustenido)", "Ré"], correct: 1 },
+        { q: "Para subir um semitom de Mi, chegamos em:", options: ["Fá", "Fá#"], correct: 0 },
+        { q: "Tons e semitons são usados para:", options: ["Criar escalas e melodias", "Medir volume do som"], correct: 0 }
+      ];
+
+      if (startBtn4) {
+        startBtn4.addEventListener("click", () => {
+          startBtn4.style.display = "none";
+          quizBox4.style.display = "block";
+          startFullQuiz4();
+        });
+      }
+
+      function startFullQuiz4() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz4-timer");
+        const qEl = document.getElementById("quiz4-question");
+        const optsEl = document.getElementById("quiz4-options");
+        const feedbackEl = document.getElementById("quiz4-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz4(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions4.length) { finishQuiz4(); return; }
+          const q = quizQuestions4[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz4() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '5') {
+      const startBtn5 = document.getElementById("startQuizBtn5");
+      const quizBox5 = document.getElementById("fullQuiz5");
+
+      const quizQuestions5 = [
+        { q: "Qual é o padrão da escala maior?", options: ["Tom – Tom – Semitom – Tom – Tom – Tom – Semitom", "Tom – Semitom – Tom – Tom – Semitom – Tom – Tom"], correct: 0 },
+        { q: "Na escala de Dó maior, quais notas ela possui?", options: ["Dó, Ré, Mi, Fá, Sol, Lá, Si", "Dó, Ré, Mi, Fá#, Sol, Lá, Si"], correct: 0 },
+        { q: "Qual intervalo existe entre Mi e Fá na escala de Dó maior?", options: ["Tom", "Semitom"], correct: 1 },
+        { q: "Qual intervalo existe entre Ré e Mi na escala de Dó maior?", options: ["Tom", "Semitom"], correct: 0 },
+        { q: "A escala de Dó maior usa somente...", options: ["Notas brancas do piano", "Notas pretas do piano"], correct: 0 },
+        { q: "Qual é a 5ª nota da escala de Dó maior?", options: ["Sol", "Fá"], correct: 0 },
+        { q: "Qual é a última nota da escala de Dó maior?", options: ["Si", "Dó"], correct: 1 },
+        { q: "Quantos tons existem na escala maior?", options: ["5 tons e 2 semitons", "4 tons e 3 semitons"], correct: 0 },
+        { q: "O intervalo entre Si e Dó é:", options: ["Tom", "Semitom"], correct: 1 },
+        { q: "A escala maior é importante porque:", options: ["É base para músicas ocidentais", "É usada só no piano"], correct: 0 }
+      ];
+
+      if (startBtn5) {
+        startBtn5.addEventListener("click", () => {
+          startBtn5.style.display = "none";
+          quizBox5.style.display = "block";
+          startFullQuiz5();
+        });
+      }
+
+      function startFullQuiz5() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz5-timer");
+        const qEl = document.getElementById("quiz5-question");
+        const optsEl = document.getElementById("quiz5-options");
+        const feedbackEl = document.getElementById("quiz5-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz5(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions5.length) { finishQuiz5(); return; }
+          const q = quizQuestions5[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz5() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '6') {
+      const startBtn6 = document.getElementById("startQuizBtn6");
+      const quizBox6 = document.getElementById("fullQuiz6");
+
+      const quizQuestions6 = [
+        { q: "Qual é o padrão da escala menor natural?", options: ["Tom – Semitom – Tom – Tom – Semitom – Tom – Tom", "Tom – Tom – Semitom – Tom – Tom – Tom – Semitom"], correct: 0 },
+        { q: "Qual é a escala menor relativa da escala de Dó maior?", options: ["Lá menor", "Mi menor"], correct: 0 },
+        { q: "A escala de Lá menor natural começa em:", options: ["Dó", "Lá"], correct: 1 },
+        { q: "Entre Si e Dó temos:", options: ["Tom", "Semitom"], correct: 1 },
+        { q: "Entre Mi e Fá temos:", options: ["Tom", "Semitom"], correct: 1 },
+        { q: "Qual a sensação mais comum associada à escala menor?", options: ["Triste/melancólica", "Feliz/alegre"], correct: 0 },
+        { q: "A escala de Lá menor natural usa as mesmas notas de:", options: ["Dó maior", "Sol maior"], correct: 0 },
+        { q: "Quantos semitons existem na escala menor natural?", options: ["2", "3"], correct: 1 },
+        { q: "Qual é a 5ª nota da escala de Lá menor?", options: ["Mi", "Ré"], correct: 0 },
+        { q: "A diferença principal entre a escala maior e menor está:", options: ["Na ordem de tons e semitons", "Na velocidade da música"], correct: 0 }
+      ];
+
+      if (startBtn6) {
+        startBtn6.addEventListener("click", () => {
+          startBtn6.style.display = "none";
+          quizBox6.style.display = "block";
+          startFullQuiz6();
+        });
+      }
+
+      function startFullQuiz6() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz6-timer");
+        const qEl = document.getElementById("quiz6-question");
+        const optsEl = document.getElementById("quiz6-options");
+        const feedbackEl = document.getElementById("quiz6-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz6(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions6.length) { finishQuiz6(); return; }
+          const q = quizQuestions6[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz6() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '7') {
+      const startBtn7 = document.getElementById("startQuizBtn7");
+      const quizBox7 = document.getElementById("fullQuiz7");
+
+      const quizQuestions7 = [
+        { q: "Quantos tempos dura a semibreve?", options: ["2 tempos", "4 tempos", "1 tempo"], correct: 1 },
+        { q: "Qual figura dura 2 tempos?", options: ["Mínima", "Semínima", "Colcheia"], correct: 0 },
+        { q: "A semínima corresponde a:", options: ["1 tempo", "2 tempos"], correct: 0 },
+        { q: "A colcheia tem duração de:", options: ["1/2 tempo", "1 tempo"], correct: 0 },
+        { q: "Qual parte da figura é a parte oval?", options: ["Cabeça", "Haste", "Colchete"], correct: 0 },
+        { q: "O traço vertical que acompanha a cabeça da nota chama-se:", options: ["Cabeça", "Haste"], correct: 1 },
+        { q: "As bandeirolas (colchetes) aparecem em figuras de:", options: ["Maior duração", "Menor duração"], correct: 1 },
+        { q: "Qual é a figura de menor duração da tabela?", options: ["Semifusa", "Semicolcheia"], correct: 0 },
+        { q: "O silêncio da mínima é representado por:", options: ["Um traço abaixo da linha", "Um traço acima da linha"], correct: 1 },
+        { q: "Qual é a relação entre som e silêncio?", options: ["Cada figura de som possui um equivalente em silêncio", "São coisas totalmente diferentes"], correct: 0 }
+      ];
+
+      if (startBtn7) {
+        startBtn7.addEventListener("click", () => {
+          startBtn7.style.display = "none";
+          quizBox7.style.display = "block";
+          startFullQuiz7();
+        });
+      }
+
+      function startFullQuiz7() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz7-timer");
+        const qEl = document.getElementById("quiz7-question");
+        const optsEl = document.getElementById("quiz7-options");
+        const feedbackEl = document.getElementById("quiz7-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz7(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions7.length) { finishQuiz7(); return; }
+          const q = quizQuestions7[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz7() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '8') {
+      const startBtn8 = document.getElementById("startQuizBtn8");
+      const quizBox8 = document.getElementById("fullQuiz8");
+
+      const quizQuestions8 = [
+        { q: "Quantos tempos dura a semínima?", options: ["1 tempo", "2 tempos", "1/2 tempo"], correct: 0 },
+        { q: "Quantos tempos dura a semínima pontuada?", options: ["1 tempo", "1,5 tempos", "2 tempos"], correct: 1 },
+        { q: "O ponto ao lado de uma figura aumenta sua duração em:", options: ["Metade do valor original", "O dobro do valor", "Não altera"], correct: 0 },
+        { q: "Um compasso 4/4 é exemplo de:", options: ["Ritmo simples", "Ritmo composto"], correct: 0 },
+        { q: "Um compasso 6/8 é exemplo de:", options: ["Ritmo simples", "Ritmo composto"], correct: 1 },
+        { q: "Quantas colcheias cabem em 1 semínima?", options: ["2", "3", "4"], correct: 0 },
+        { q: "Quantas colcheias cabem em 1 semínima pontuada?", options: ["2", "3", "4"], correct: 1 },
+        { q: "A diferença entre ritmos simples e compostos está:", options: ["Na divisão do tempo (2 ou 3 partes)", "Na altura do som"], correct: 0 },
+        { q: "Qual compasso é típico em valsas?", options: ["3/4", "4/4", "6/8"], correct: 0 },
+        { q: "No hip hop, o compasso mais usado é:", options: ["3/4", "4/4", "6/8"], correct: 1 }
+      ];
+
+      if (startBtn8) {
+        startBtn8.addEventListener("click", () => {
+          startBtn8.style.display = "none";
+          quizBox8.style.display = "block";
+          startFullQuiz8();
+        });
+      }
+
+      function startFullQuiz8() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz8-timer");
+        const qEl = document.getElementById("quiz8-question");
+        const optsEl = document.getElementById("quiz8-options");
+        const feedbackEl = document.getElementById("quiz8-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz8(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions8.length) { finishQuiz8(); return; }
+          const q = quizQuestions8[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz8() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '9') {
+      const startBtn9 = document.getElementById("startQuizBtn9");
+      const quizBox9 = document.getElementById("fullQuiz9");
+
+      const quizQuestions9 = [
+        { q: "Qual clave é mais usada para instrumentos agudos?", options: ["Clave de Sol", "Clave de Fá", "Clave de Dó"], correct: 0 },
+        { q: "Em qual linha da pauta a Clave de Sol posiciona a nota Sol?", options: ["Primeira", "Segunda", "Terceira"], correct: 1 },
+        { q: "Qual clave é usada para instrumentos graves, como contrabaixo?", options: ["Clave de Sol", "Clave de Fá"], correct: 1 },
+        { q: "A clave de Dó pode aparecer em:", options: ["Diversas linhas", "Apenas na primeira linha"], correct: 0 },
+        { q: "A clave de Fá posiciona a nota Fá em qual linha?", options: ["Quarta", "Segunda"], correct: 0 },
+        { q: "O piano usa duas claves. Quais são elas?", options: ["Sol e Fá", "Sol e Dó", "Dó e Fá"], correct: 0 },
+        { q: "A clave de Sol é mais usada para:", options: ["Instrumentos graves", "Instrumentos agudos"], correct: 1 },
+        { q: "A clave de Dó é comum em qual instrumento?", options: ["Viola", "Violino"], correct: 0 },
+        { q: "Qual clave posiciona a nota Sol na segunda linha?", options: ["Clave de Sol", "Clave de Fá"], correct: 0 },
+        { q: "Qual clave é mais importante para iniciantes?", options: ["Clave de Sol", "Clave de Fá", "Clave de Dó"], correct: 0 }
+      ];
+
+      if (startBtn9) {
+        startBtn9.addEventListener("click", () => {
+          startBtn9.style.display = "none";
+          quizBox9.style.display = "block";
+          startFullQuiz9();
+        });
+      }
+
+      function startFullQuiz9() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz9-timer");
+        const qEl = document.getElementById("quiz9-question");
+        const optsEl = document.getElementById("quiz9-options");
+        const feedbackEl = document.getElementById("quiz9-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz9(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions9.length) { finishQuiz9(); return; }
+          const q = quizQuestions9[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz9() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '10') {
+      const startBtn10 = document.getElementById("startQuizBtn10");
+      const quizBox10 = document.getElementById("fullQuiz10");
+
+      const quizQuestions10 = [
+        { q: "O que é o compasso na música?", options: ["Organização dos tempos", "Velocidade", "Intensidade"], correct: 0 },
+        { q: "Qual compasso é chamado de quaternário?", options: ["3/4", "4/4", "2/4"], correct: 1 },
+        { q: "No compasso 3/4, quantos tempos há?", options: ["2", "3", "4"], correct: 1 },
+        { q: "O compasso 2/4 é considerado:", options: ["Binário", "Ternário", "Quaternário"], correct: 0 },
+        { q: "Qual compasso é mais usado na música popular?", options: ["4/4", "3/4", "6/8"], correct: 0 },
+        { q: "O compasso 6/8 é um exemplo de:", options: ["Binário", "Ternário composto", "Livre"], correct: 1 },
+        { q: "O compasso ajuda a:", options: ["Organizar a pulsação", "Afinar instrumentos"], correct: 0 },
+        { q: "No compasso 2/4, a unidade de tempo é geralmente:", options: ["Semínima", "Mínima", "Colcheia"], correct: 0 },
+        { q: "Um compasso ternário tem:", options: ["3 tempos", "4 tempos", "2 tempos"], correct: 0 },
+        { q: "Como o compasso é representado?", options: ["Por fração (ex: 4/4)", "Por símbolo gráfico", "Por acorde"], correct: 0 }
+      ];
+
+      if (startBtn10) {
+        startBtn10.addEventListener("click", () => {
+          startBtn10.style.display = "none";
+          quizBox10.style.display = "block";
+          startFullQuiz10();
+        });
+      }
+
+      function startFullQuiz10() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz10-timer");
+        const qEl = document.getElementById("quiz10-question");
+        const optsEl = document.getElementById("quiz10-options");
+        const feedbackEl = document.getElementById("quiz10-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz10(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions10.length) { finishQuiz10(); return; }
+          const q = quizQuestions10[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz10() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+
+    if (id === '11') {
+      const startBtn11 = document.getElementById("startQuizBtn11");
+      const quizBox11 = document.getElementById("fullQuiz11");
+
+      const quizQuestions11 = [
+        { q: "O que faz o sustenido (♯)?", options: ["Abaixa a nota", "Eleva a nota", "Cancela alterações"], correct: 1 },
+        { q: "O que faz o bemol (♭)?", options: ["Eleva a nota", "Abaixa a nota", "Cancela alterações"], correct: 1 },
+        { q: "O que faz o bequadro (♮)?", options: ["Mantém o acidente", "Cancela o acidente", "Diminui a intensidade"], correct: 1 },
+        { q: "Quantos semitons um sustenido altera?", options: ["1", "2", "0.5"], correct: 0 },
+        { q: "Qual símbolo representa o bemol?", options: ["♯", "♭", "♮"], correct: 1 },
+        { q: "Se temos um Fá♯, qual é a nota natural correspondente?", options: ["Fá", "Fá bemol", "Sol"], correct: 0 },
+        { q: "Se temos um Si♭, qual é a nota natural correspondente?", options: ["Si", "Dó", "Lá"], correct: 0 },
+        { q: "O bequadro é usado para:", options: ["Subir meio tom", "Descer meio tom", "Cancelar acidentes"], correct: 2 },
+        { q: "Qual acidente transforma Dó em Dó♯?", options: ["Sustenido", "Bemol", "Bequadro"], correct: 0 },
+        { q: "Quando um acidente está na armadura de clave, ele vale para:", options: ["Uma nota específica", "Todas as ocorrências dessa nota", "Apenas no compasso atual"], correct: 1 }
+      ];
+
+      if (startBtn11) {
+        startBtn11.addEventListener("click", () => {
+          startBtn11.style.display = "none";
+          quizBox11.style.display = "block";
+          startFullQuiz11();
+        });
+      }
+
+      function startFullQuiz11() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz11-timer");
+        const qEl = document.getElementById("quiz11-question");
+        const optsEl = document.getElementById("quiz11-options");
+        const feedbackEl = document.getElementById("quiz11-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz11(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions11.length) { finishQuiz11(); return; }
+          const q = quizQuestions11[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz11() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
+        showQuestion();
+      }
+    }
+    if (id === '12') {
+      const startBtn12 = document.getElementById("startQuizBtn12");
+      const quizBox12 = document.getElementById("fullQuiz12");
+
+      const quizQuestions12 = [
+        {
+          q: "Ordem dos sustenidos na armadura:", options: [
+            "Fá♯, Dó♯, Sol♯, Ré♯, Lá♯, Mi♯, Si♯",
+            "Si♭, Mi♭, Lá♭, Ré♭, Sol♭, Dó♭, Fá♭"
+          ], correct: 0
+        },
+        {
+          q: "Ordem dos bemóis na armadura:", options: [
+            "Fá♯, Dó♯, Sol♯, Ré♯, Lá♯, Mi♯, Si♯",
+            "Si♭, Mi♭, Lá♭, Ré♭, Sol♭, Dó♭, Fá♭"
+          ], correct: 1
+        },
+        {
+          q: "Como achar a tonalidade MAIOR com sustenidos?", options: [
+            "Penúltimo sustenido",
+            "Meio tom acima do último sustenido"
+          ], correct: 1
+        },
+        {
+          q: "Como achar a tonalidade MAIOR com bemóis?", options: [
+            "Penúltimo bemol (exceto 1 ♭ → Fá Maior)",
+            "Último bemol + meio tom"
+          ], correct: 0
+        },
+        {
+          q: "Sem acidentes na armadura, a tonalidade é:", options: [
+            "Dó Maior / Lá menor",
+            "Sol Maior / Mi menor"
+          ], correct: 0
+        },
+        {
+          q: "Ré Maior possui:", options: [
+            "2 sustenidos (Fá♯, Dó♯)",
+            "2 bemóis (Si♭, Mi♭)"
+          ], correct: 0
+        },
+        {
+          q: "Mi♭ Maior possui:", options: [
+            "3 bemóis (Si♭, Mi♭, Lá♭)",
+            "3 sustenidos (Fá♯, Dó♯, Sol♯)"
+          ], correct: 0
+        },
+        {
+          q: "Armadura com Fá♯, Dó♯, Sol♯ indica a tonalidade:", options: [
+            "Mi Maior",
+            "Lá Maior"
+          ], correct: 1
+        },
+        {
+          q: "Armadura com Si♭ e Mi♭ indica a tonalidade:", options: [
+            "Si♭ Maior",
+            "Fá Maior"
+          ], correct: 0
+        },
+        {
+          q: "Quando a armadura muda no meio da peça:", options: [
+            "Passa a valer a partir do compasso onde aparece",
+            "Só vale para o próximo sistema"
+          ], correct: 0
+        }
+      ];
+
+      if (startBtn12) {
+        startBtn12.addEventListener("click", () => {
+          startBtn12.style.display = "none";
+          quizBox12.style.display = "block";
+          startFullQuiz12();
+        });
+      }
+
+      function startFullQuiz12() {
+        let current = 0;
+        let score = 0;
+        let timeLeft = 60;
+        const timerEl = document.getElementById("quiz12-timer");
+        const qEl = document.getElementById("quiz12-question");
+        const optsEl = document.getElementById("quiz12-options");
+        const feedbackEl = document.getElementById("quiz12-feedback");
+
+        const timer = setInterval(() => {
+          timeLeft--;
+          timerEl.textContent = `Tempo restante: ${timeLeft}s`;
+          if (timeLeft <= 0) { clearInterval(timer); finishQuiz12(); }
+        }, 1000);
+
+        function showQuestion() {
+          if (current >= quizQuestions12.length) { finishQuiz12(); return; }
+          const q = quizQuestions12[current];
+          qEl.textContent = q.q;
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = "";
+
+          q.options.forEach((opt, i) => {
+            const btn = document.createElement("button");
+            btn.textContent = opt;
+            btn.style.margin = "8px 4px";
+            btn.style.padding = "18px 28px";
+            btn.style.fontSize = "20px";
+            btn.style.fontWeight = "bold";
+            btn.style.background = "#222";
+            btn.style.color = "#fff";
+            btn.style.border = "2px solid #555";
+            btn.style.borderRadius = "10px";
+            btn.style.cursor = "pointer";
+
+            btn.addEventListener("click", async () => {
+              Array.from(optsEl.children).forEach(b => b.disabled = true);
+              if (i === q.correct) {
+                btn.style.background = "green";
+                feedbackEl.textContent = "✅ Correto! +10 pontos";
+                feedbackEl.style.color = "lightgreen";
+                score += 10;
+                await updateUserScore(10);
+              } else {
+                btn.style.background = "red";
+                feedbackEl.textContent = "❌ Errado! -5 pontos";
+                feedbackEl.style.color = "red";
+                score -= 5;
+                await updateUserScore(-5);
+                optsEl.children[q.correct].style.background = "green";
+              }
+              current++;
+              setTimeout(() => {
+                feedbackEl.textContent = "";
+                showQuestion();
+              }, 800);
+            });
+            optsEl.appendChild(btn);
+          });
+        }
+
+        function finishQuiz12() {
+          clearInterval(timer);
+          qEl.textContent = "🎉 Quiz finalizado!";
+          optsEl.innerHTML = "";
+          feedbackEl.textContent = `Pontuação final: ${score}`;
+          feedbackEl.style.color = "#ffd700";
+        }
+
         showQuestion();
       }
     }
@@ -743,3 +2302,59 @@ function listenRanking() {
     });
 }
 document.querySelector('.tab-btn[data-tab="ranking"]').addEventListener("click", () => listenRanking());
+
+// --- Ranking Homepage com filtros ---
+function listenHomeRanking(period = "all") {
+  if (!firebase.firestore) return;
+  const db = firebase.firestore();
+  let query = db.collection("ranking");
+
+  // 🔹 Filtro por período
+  const now = new Date();
+  if (period === "monthly") {
+    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
+    query = query.where("lastLogin", ">=", firstDay);
+  } else if (period === "weekly") {
+    const firstDay = new Date();
+    firstDay.setDate(now.getDate() - 7);
+    query = query.where("lastLogin", ">=", firstDay);
+  }
+
+  query = query.orderBy("score", "desc").limit(10);
+
+  query.onSnapshot((snap) => {
+    const tbody = document.querySelector("#homeRankingTable tbody");
+    if (!tbody) return;
+    let rows = "";
+    let pos = 1;
+    snap.forEach(doc => {
+      const d = doc.data();
+      rows += `
+        <tr>
+          <td>${pos++}</td>
+          <td>
+            <img src="${d.photo || "imgs/user.png"}" style="width:28px; height:28px; border-radius:50%; vertical-align:middle; margin-right:8px;">
+            ${d.name || "Anônimo"}
+          </td>
+          <td>${d.score || 0}</td>
+        </tr>`;
+    });
+    tbody.innerHTML = rows || `<tr><td colspan="3">Sem dados</td></tr>`;
+  });
+}
+
+// 🔹 Controle das abas de período do ranking
+window.addEventListener("DOMContentLoaded", () => {
+  const buttons = document.querySelectorAll(".rk-btn");
+  buttons.forEach(btn => {
+    btn.addEventListener("click", () => {
+      buttons.forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      const period = btn.dataset.period;
+      listenHomeRanking(period);
+    });
+  });
+
+  // Carregar Geral por padrão
+  listenHomeRanking("all");
+});

@@ -790,12 +790,11 @@ body {
   z-index: 2;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  /* 🔹 alinhar conteúdo à esquerda */
   padding-left: 40px;
-  /* 🔹 espaçamento lateral */
   padding-top: 120px;
-  /* 🔹 compensa topbar + header */
+  align-items: flex-start;
+
+  overflow: hidden; /* impede scroll dentro do main */
 }
 
 /* Background da imagem atrás */
@@ -1011,11 +1010,20 @@ body {
   border: 2px solid #555;
 }
 
-/* Cursos */
-#cursos .course-wrapper {
-  padding: 12px 0;
-  color: #fff;
+#cursos {                /* section.tab-page */
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }
+
+#cursos .course-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;          /* pega todo o espaço da aba */
+  min-height: 0;    /* 🔑 permite que os filhos rolem */
+  overflow: hidden; /* evita scroll fora da lista */
+}
+
 
 .course-progress {
   position: relative;
@@ -1047,7 +1055,26 @@ body {
   display: flex;
   flex-direction: column;
   gap: 12px;
+  flex: 1;          /* ocupa o resto do wrapper */
+  min-height: 0;    /* 🔑 necessário em flex para o overflow funcionar */
+  overflow-y: auto; /* ativa o scroll vertical */
+  overflow-x: hidden;
+  padding-right: 6px; /* espaço pro scrollbar */
 }
+
+
+/* 🔹 Scrollbar estilizado */
+.modules::-webkit-scrollbar {
+  width: 8px;
+}
+.modules::-webkit-scrollbar-thumb {
+  background: #777;
+  border-radius: 4px;
+}
+.modules::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
 
 .module-card {
   display: flex;
@@ -1251,3 +1278,91 @@ body {
     transform: translate(20%, -54%) rotate(0deg);
   }
 }
+
+/* 🔹 Scroll só dentro da lista de módulos */
+#cursos .modules {
+  max-height: calc(100vh - 200px); /* ajusta conforme o espaço ocupado pelo header + progress bar */
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding-right: 8px;
+  box-sizing: border-box;
+}
+
+/* Scrollbar estilizado */
+#cursos .modules::-webkit-scrollbar {
+  width: 8px;
+}
+#cursos .modules::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+#cursos .modules::-webkit-scrollbar-track {
+  background: #222;
+}
+
+/* ---- Fix geral para permitir scroll dentro de .modules e manter texto branco ---- */
+
+/* Tab content e páginas precisam permitir que filhos façam flex/shrink */
+.tab-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* important */
+}
+
+/* Quando uma página fica ativa, ela vira um flex container para a aba 'cursos' funcionar */
+.tab-page {
+  display: none;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+}
+.tab-page.active {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  overflow: hidden; /* evita scroll duplo na página */
+}
+
+/* Seção cursos: ocupa o espaço e permite que o wrapper preencha */
+#cursos {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+
+/* Wrapper do curso pega o espaço disponível e controla overflow externo */
+#cursos .course-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0; /* 🔑 faz o overflow interno funcionar */
+  overflow: hidden;
+  color: #fff; /* força texto branco dentro do wrapper */
+}
+
+/* A lista de módulos é a única área rolável */
+.modules {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;          /* ocupa o espaço restante */
+  min-height: 0;    /* 🔑 necessário para overflow funcionar em flex */
+  overflow-y: auto; /* ativa o scroll vertical */
+  overflow-x: hidden;
+  padding-right: 8px; /* espaço pro scrollbar */
+  -webkit-overflow-scrolling: touch; /* smooth scroll em iOS */
+}
+
+/* Garanta texto branco nos cards (caso alguma regra anterior esteja sobrescrevendo) */
+.module-card,
+.module-card .module-info,
+.module-card h4,
+.module-card p {
+  color: #fff !important;
+}
+
+/* Se quiser estilizar a barra de rolagem (opcional) */
+.modules::-webkit-scrollbar { width: 10px; }
+.modules::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 8px; }
