@@ -1,3 +1,18 @@
+// SOLUÇÃO: Adicione esta função para corrigir o novo erro.
+function renderAuthUi(user) {
+  // Apenas registra no console que a função foi chamada.
+  console.log("Função renderAuthUi foi chamada para o usuário:", user);
+
+  // A lógica real aqui seria mostrar/esconder o botão de login,
+  // exibir o nome e a foto do usuário, etc.
+  // Deixaremos isso para depois.
+}
+
+// Você provavelmente já tem esta de antes:
+function updateProgressUI(progressData) {
+  console.log("Função updateProgressUI foi chamada. Dados recebidos:", progressData);
+}
+
 // ---------------- Disco Giratório ----------------
 const disc = document.getElementById("disc");
 const seta = document.getElementById("seta");
@@ -2429,84 +2444,89 @@ const btnMinus = document.getElementById("btn-minus");
 if (btnPlus) btnPlus.addEventListener("click", () => updateUserScore(1));
 if (btnMinus) btnMinus.addEventListener("click", () => updateUserScore(-1));
 
-// Ranking em tempo real
-function listenRanking() {
-  if (!firebase.firestore) return;
-  const db = firebase.firestore();
-  db.collection("ranking")
-    .orderBy("score", "desc")
-    .limit(10)
-    .onSnapshot((snap) => {
-      const tbody = document.querySelector("#ranking-table tbody");
-      if (!tbody) return;
-      let rows = "";
-      snap.forEach(doc => {
-        const d = doc.data();
-        rows += `
-          <tr>
-            <td><img src="${d.photo || "imgs/user.png"}" style="width:32px; height:32px; border-radius:50%;"></td>
-            <td>${d.name || "Anônimo"}</td>
-            <td>${d.score || 0}</td>
-          </tr>`;
-      });
-      tbody.innerHTML = rows || `<tr><td colspan="3">Sem dados</td></tr>`;
-    });
-}
-document.querySelector('.tab-btn[data-tab="ranking"]').addEventListener("click", () => listenRanking());
+// Configuração do ranking
+let unsubscribeRanking = null; // Variável para controlar o "ouvinte"
 
-
-// --- Ranking Homepage com filtros ---
-function listenHomeRanking(period = "all") {
-  if (!firebase.firestore) return;
-  const db = firebase.firestore();
-  let query = db.collection("ranking");
-
-  // 🔹 Filtro por período
-  const now = new Date();
-  if (period === "monthly") {
-    const firstDay = new Date(now.getFullYear(), now.getMonth(), 1);
-    query = query.where("lastLogin", ">=", firstDay);
-  } else if (period === "weekly") {
-    const firstDay = new Date();
-    firstDay.setDate(now.getDate() - 7);
-    query = query.where("lastLogin", ">=", firstDay);
+function initRanking() {
+  // 1. Se já existe um ouvinte, não cria outro.
+  if (unsubscribeRanking) {
+    return;
   }
 
-  query = query.orderBy("score", "desc").limit(10);
+  const rankingQuery = db.collection("ranking")
+    .orderBy("score", "desc")
+    .limit(10);
 
-  query.onSnapshot((snap) => {
-    const tbody = document.querySelector("#homeRankingTable tbody");
-    if (!tbody) return;
-    let rows = "";
-    let pos = 1;
-    snap.forEach(doc => {
-      const d = doc.data();
-      rows += `
-        <tr>
-          <td>${pos++}</td>
-          <td>
-            <img src="${d.photo || "imgs/user.png"}" style="width:28px; height:28px; border-radius:50%; vertical-align:middle; margin-right:8px;">
-            ${d.name || "Anônimo"}
-          </td>
-          <td>${d.score || 0}</td>
-        </tr>`;
+  // 2. Guarda a função para "desligar" o ouvinte depois
+  unsubscribeRanking = rankingQuery.onSnapshot((snap) => {
+    // 3. Seleciona o corpo de AMBAS as tabelas
+    const rankingTbody = document.querySelector("#ranking-table tbody");
+    const homeTbody = document.querySelector("#homeRankingTable tbody");
+
+    if (!rankingTbody || !homeTbody) return;
+
+    // Limpa as tabelas
+    rankingTbody.innerHTML = "";
+    homeTbody.innerHTML = "";
+
+    if (snap.empty) {
+      const emptyRow = `<tr><td colspan="3">Nenhum dado disponível</td></tr>`;
+      rankingTbody.innerHTML = emptyRow;
+      homeTbody.innerHTML = emptyRow;
+      return;
+    }
+
+    snap.forEach((doc, index) => {
+      const data = doc.data();
+      
+      // Cria a linha da tabela uma vez
+      const row = document.createElement("tr");
+      
+      const pos = `<td>${index + 1}</td>`;
+      const user = `<td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar"> ${data.name || 'Anônimo'}</td>`;
+      const score = `<td>${data.score || 0}</td>`;
+
+      // Monta a linha completa
+      // OBS: A tabela do ranking completo tem 3 colunas (Pos, Usuário, Pontos)
+      // A tabela da home tem um formato diferente (Usuário com foto embutida)
+      // Vamos adaptar:
+      const fullRankingRow = `<tr><td>${index + 1}</td><td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar"></td><td>${data.name || 'Anônimo'}</td><td>${data.score || 0}</td></tr>`;
+      const homeRankingRow = `<tr><td>${index + 1}</td><td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar" style="width:24px; border-radius:50%; margin-right: 8px;">${data.name || 'Anônimo'}</td><td>${data.score || 0}</td></tr>`;
+
+      // Adiciona a linha em cada tabela
+      rankingTbody.innerHTML += fullRankingRow; // Adaptar as colunas se necessário
+      homeTbody.innerHTML += homeRankingRow;
     });
-    tbody.innerHTML = rows || `<tr><td colspan="3">Sem dados</td></tr>`;
+
+  }, (error) => {
+    console.error("Erro no ranking:", error);
+    const errorRow = `<tr><td colspan="3">Erro ao carregar dados</td></tr>`;
+    document.querySelector("#ranking-table tbody").innerHTML = errorRow;
+    document.querySelector("#homeRankingTable tbody").innerHTML = errorRow;
   });
 }
 
-// 🔹 Controle das abas de período do ranking
-window.addEventListener("DOMContentLoaded", () => {
-  const buttons = document.querySelectorAll(".rk-btn");
-  buttons.forEach(btn => {
-    btn.addEventListener("click", () => {
-      buttons.forEach(b => b.classList.remove("active"));
-      btn.classList.add("active");
-      const period = btn.dataset.period;
-      listenHomeRanking(period);
-    });
-  });
+// Chame a função para "desligar" o ouvinte quando o usuário fizer logout
+auth.onAuthStateChanged(async (user) => {
+  renderAuthUi(user);
+  if (user) {
+    currentUser = user;
+    // ... (seu código de verificação de usuário)
+    initRanking(); // Inicia o listener do ranking após login
+  } else {
+    currentUser = null;
+    // Se o usuário deslogou e o ouvinte existe, desative-o
+    if (unsubscribeRanking) {
+      unsubscribeRanking();
+      unsubscribeRanking = null; // Reseta a variável
+    }
+  }
+});
 
-  // Carregar Geral por padrão
-  listenHomeRanking("all");
+// Adiciona o ouvinte de clique CORRIGIDO
+document.querySelector('.tab-btn[data-tab="ranking-panel"]')?.addEventListener("click", () => {
+  // Apenas garante que a função seja chamada se o usuário já estiver logado
+  if (currentUser) {
+    initRanking();
+  }
 });
