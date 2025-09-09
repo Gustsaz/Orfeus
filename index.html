@@ -34,7 +34,7 @@
       <button class="tab-btn" data-tab="afinador">Afinador</button>
       <button class="tab-btn" data-tab="cursos">Cursos</button>
       <button class="tab-btn" data-tab="instrumentos">Instrumentos</button>
-      <button class="tab-btn" data-tab="ranking">Ranking</button>
+      <button class="tab-btn" data-tab="ranking-panel">Ranking</button>
     </nav>
 
     <!-- 🔹 Container de conteúdo -->
@@ -288,24 +288,26 @@
       </section>
 
       <!-- Ranking -->
-      <section class="tab-page" id="ranking">
-        <div id="ranking-panel" style="margin:40px auto; max-width:400px; color:white;">
-          <h3>Ranking</h3>
-          <table id="ranking-table">
-            <thead>
-              <tr>
-                <th>Usuário</th>
-                <th>Pontos</th>
-              </tr>
-            </thead>
-            <tbody></tbody>
-          </table>
-          <div class="ranking-buttons">
-            <button id="btn-plus">+1</button>
-            <button id="btn-minus">-1</button>
-          </div>
-        </div>
-      </section>
+     <!-- Painel do Ranking -->
+<div id="ranking-panel" class="tab-page">
+  <h3>Ranking</h3>
+  <table id="ranking-table">
+    <thead>
+      <tr>
+        <th>Posição</th>
+        <th>Usuário</th>
+        <th>Pontos</th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <div class="ranking-buttons">
+    <button id="btn-plus">+1</button>
+    <button id="btn-minus">-1</button>
+  </div>
+</div>
+
 
     </div>
 
@@ -317,22 +319,37 @@
 
   <!-- Firebase -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+
   <script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCZ7am6qEWa5-X-12FCLkqU5X5QcEBkZ7s",
-      authDomain: "edutainment-db.firebaseapp.com",
-      projectId: "edutainment-db",
-      storageBucket: "edutainment-db.firebasestorage.app",
-      messagingSenderId: "86651784570",
-      appId: "1:86651784570:web:64a18f58ed5e5636711ac3",
-      measurementId: "G-FQ450KT41Q"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
-    const provider = new firebase.auth.GoogleAuthProvider();
-  </script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  const firebaseConfig = {
+
+  apiKey: "AIzaSyCZ7am6qEWa5-X-12FCLkqU5X5QcEBkZ7s",
+
+  authDomain: "edutainment-db.firebaseapp.com",
+
+  databaseURL: "https://edutainment-db-default-rtdb.firebaseio.com",
+
+  projectId: "edutainment-db",
+
+  storageBucket: "edutainment-db.firebasestorage.app",
+
+  messagingSenderId: "86651784570",
+
+  appId: "1:86651784570:web:64a18f58ed5e5636711ac3",
+
+  measurementId: "G-FQ450KT41Q"
+
+};
+
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  const provider = new firebase.auth.GoogleAuthProvider();
+  const db = firebase.firestore(); // 🎉 Adicione esta linha!
+  </script>  
+ 
+
   <script src="script.js"></script>
 </body>
 
