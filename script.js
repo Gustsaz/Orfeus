@@ -2504,7 +2504,7 @@ async function updateUserScore(delta) {
   if (!currentUser) return;
 
   try {
-    const userRef = db.collection('ranking').doc(currentUser.uid);
+    const userRef = db.collection('users').doc(currentUser.uid);
     const userDoc = await userRef.get();
 
     if (userDoc.exists) {
@@ -3601,6 +3601,7 @@ async function addUserPoints(amount) {
   }
 
 }
+
 
 
 
