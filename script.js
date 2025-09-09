@@ -169,24 +169,72 @@ window.addEventListener("DOMContentLoaded", () => {
   const courseBar = document.getElementById('courseProgressBar');
   const courseText = document.getElementById('courseProgressText');
 
-  const PROGRESS_KEY = 'orfeus.course.progress';
-  function readProgress() {
-    try { return JSON.parse(localStorage.getItem(PROGRESS_KEY)) || { done: [] }; } catch { return { done: [] }; }
+  async function getUserProgress() {
+    if (!auth.currentUser) return { completedModules: [], lastCompleted: null };
+    const db = firebase.firestore();
+    const userRef = db.collection("users").doc(auth.currentUser.uid);
+    const doc = await userRef.get();
+    if (doc.exists && doc.data().progress) {
+      return doc.data().progress;
+    }
+    return { completedModules: [], lastCompleted: null };
   }
-  function writeProgress(state) { localStorage.setItem(PROGRESS_KEY, JSON.stringify(state)); }
-  function updateProgressUI() {
-    const state = readProgress();
+
+  async function updateUserProgress(moduleId) {
+    if (!auth.currentUser) return;
+    const db = firebase.firestore();
+    const userRef = db.collection("users").doc(auth.currentUser.uid);
+
+    await db.runTransaction(async (t) => {
+      const doc = await t.get(userRef);
+      let progress = { completedModules: [], lastCompleted: null };
+      if (doc.exists && doc.data().progress) {
+        progress = doc.data().progress;
+      }
+
+      if (!progress.completedModules.includes(moduleId)) {
+        progress.completedModules.push(moduleId);
+        progress.lastCompleted = moduleId;
+      }
+
+      t.update(userRef, { progress });
+    });
+  }
+
+  async function updateProgressUI() {
+    const progress = await getUserProgress();
     const total = document.querySelectorAll('#cursos .module-card').length;
-    const pct = Math.round((state.done.length / total) * 100);
+    const pct = Math.round((progress.completedModules.length / total) * 100);
+
+    const courseBar = document.getElementById("courseProgressBar");
+    const courseText = document.getElementById("courseProgressText");
+
     if (courseBar) courseBar.style.width = pct + "%";
     if (courseText) courseText.textContent = pct + "% concluído";
+
     document.querySelectorAll('#cursos .module-card').forEach(card => {
       const id = card.dataset.module;
       const status = card.querySelector('.module-status');
-      if (state.done.includes(id)) { status.dataset.status = 'done'; status.textContent = '✓'; }
-      else { status.dataset.status = 'pending'; status.textContent = '✕'; }
+      const openBtn = card.querySelector('.module-open');
+
+      if (progress.completedModules.includes(id)) {
+        status.dataset.status = 'done';
+        status.textContent = '✓';
+        openBtn.disabled = false;
+      } else {
+        status.dataset.status = 'pending';
+        status.textContent = '✕';
+        // 🔒 só libera se o anterior estiver concluído
+        const prevId = (parseInt(id) - 1).toString();
+        if (id === "1" || progress.completedModules.includes(prevId)) {
+          openBtn.disabled = false;
+        } else {
+          openBtn.disabled = true;
+        }
+      }
     });
   }
+
   async function completeModule(id) {
     const state = readProgress();
     if (!state.done.includes(id)) {
@@ -662,7 +710,28 @@ window.addEventListener("DOMContentLoaded", () => {
       <p id="quiz12-feedback" style="margin-top:10px;"></p>
     </div>
   `;
+      } else if (id === '13') {
+        html = `
+    <h3>Módulo 13 — Desafio Final: Identificação de Notas</h3>
+    <p>Selecione as notas corretas em cada posição da partitura abaixo:</p>
+    
+    <div style="margin:16px 0;">
+      <img src="imgs/partitura.jpg" alt="Partitura" 
+           style="max-width:100%; border:1px solid #333; border-radius:8px; display:block; margin-bottom:20px;">
+    </div>
+
+    <div id="noteSelectionArea" style="display:grid; grid-template-columns: repeat(6, auto); gap:12px; margin-bottom:20px; justify-content:center;">
+    </div>
+
+    <button id="checkNotesBtn" 
+            style="padding:16px 28px; font-size:20px; font-weight:bold; background:#1a1a1a; color:#fff; border:2px solid #333; border-radius:12px; cursor:pointer;">
+      Verificar Respostas
+    </button>
+
+    <p id="noteFeedback" style="margin-top:15px; font-size:18px; font-weight:bold;"></p>
+  `;
       }
+
 
     lessonContent.innerHTML = html;
 
@@ -758,6 +827,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("1").then(updateProgressUI);
+
         }
         showQuestion();
       }
@@ -865,6 +936,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("2").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -967,6 +1040,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("3").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1065,6 +1140,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("4").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1163,6 +1240,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("5").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1261,6 +1340,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("6").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1359,6 +1440,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("7").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1457,6 +1540,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("8").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1555,6 +1640,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("9").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1653,6 +1740,8 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("10").then(updateProgressUI);
+
         }
 
         showQuestion();
@@ -1751,6 +1840,7 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("11").then(updateProgressUI);
         }
 
         showQuestion();
@@ -1898,11 +1988,71 @@ window.addEventListener("DOMContentLoaded", () => {
           optsEl.innerHTML = "";
           feedbackEl.textContent = `Pontuação final: ${score}`;
           feedbackEl.style.color = "#ffd700";
+          updateUserProgress("12").then(updateProgressUI);
         }
 
         showQuestion();
       }
     }
+
+    if (id === '13') {
+      const correctSequence = [
+        "DÓ", "RÉ", "MI", "FÁ", "FÁ", "FÁ", "DÓ", "RÉ", "DÓ", "RÉ", "RÉ", "RÉ",
+        "DÓ", "SOL", "FÁ", "MI", "MI", "MI", "DÓ", "RÉ", "MI", "FÁ", "FÁ", "FÁ"
+      ];
+
+      const noteOptions = ["DÓ", "RÉ", "MI", "FÁ", "SOL", "LÁ", "SI"];
+      const selectionArea = document.getElementById("noteSelectionArea");
+
+      if (selectionArea) {
+        correctSequence.forEach((_, idx) => {
+          const select = document.createElement("select");
+          select.style.padding = "10px";
+          select.style.fontSize = "16px";
+          select.style.fontWeight = "bold";
+
+          noteOptions.forEach(note => {
+            const opt = document.createElement("option");
+            opt.value = note;
+            opt.textContent = note;
+            select.appendChild(opt);
+          });
+
+          selectionArea.appendChild(select);
+        });
+      }
+
+      const checkBtn = document.getElementById("checkNotesBtn");
+      const feedback = document.getElementById("noteFeedback");
+
+      if (checkBtn) {
+        checkBtn.addEventListener("click", async () => {
+          const selects = selectionArea.querySelectorAll("select");
+          let correct = 0;
+
+          selects.forEach((sel, i) => {
+            if (sel.value === correctSequence[i]) {
+              sel.style.border = "3px solid green";
+              correct++;
+            } else {
+              sel.style.border = "3px solid red";
+            }
+          });
+
+          feedback.textContent = `Você acertou ${correct} de ${correctSequence.length} notas! 🎵`;
+
+          if (correct === correctSequence.length) {
+            feedback.style.color = "lightgreen";
+            feedback.textContent += " Parabéns, você concluiu o desafio final!";
+            await updateUserScore(50); // bônus maior pelo desafio final
+            await completeModule("13"); // marca como concluído no progresso
+          } else {
+            feedback.style.color = "red";
+          }
+        });
+      }
+    }
+
 
     lessonPanel.classList.remove('hidden');
     setTimeout(() => lessonPanel.classList.add('show'), 20);
@@ -2253,6 +2403,7 @@ async function googleLogout() {
   catch (err) { console.error("Erro no logout:", err); }
 }
 auth.onAuthStateChanged(user => renderUser(user));
+updateProgressUI();
 
 // ---------------- Ranking ----------------
 async function updateUserScore(delta) {
@@ -2298,10 +2449,11 @@ function listenRanking() {
             <td>${d.score || 0}</td>
           </tr>`;
       });
-      tbody.innerHTML = rows;
+      tbody.innerHTML = rows || `<tr><td colspan="3">Sem dados</td></tr>`;
     });
 }
 document.querySelector('.tab-btn[data-tab="ranking"]').addEventListener("click", () => listenRanking());
+
 
 // --- Ranking Homepage com filtros ---
 function listenHomeRanking(period = "all") {
