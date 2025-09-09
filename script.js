@@ -2499,87 +2499,103 @@ async function googleLogout() {
 auth.onAuthStateChanged(user => renderUser(user));
 updateProgressUI();
 
-// ---------------- Ranking ----------------
+let currentUser = null;
+let unsubscribeRanking = null;
+
+// Atualiza a pontuação do usuário
 async function updateUserScore(delta) {
   if (!currentUser) return;
 
   try {
+    // Atualiza na coleção 'users'
     const userRef = db.collection('users').doc(currentUser.uid);
     const userDoc = await userRef.get();
+    let newPoints = delta;
 
     if (userDoc.exists) {
       const userData = userDoc.data();
-      const newScore = (userData.points || 0) + delta;
-
-      await userRef.update({
-        points: newScore
-      });
-
-      userPoints = newScore;
-
-      // Atualizar exibição de pontos
-      const pointsElement = document.querySelector('.user-points');
-      if (pointsElement) {
-        pointsElement.textContent = `${userPoints} pts`;
-      }
-
-      // Atualizar ranking
-      await updateRanking();
+      newPoints = (userData.points || 0) + delta;
+      await userRef.update({ points: newPoints });
+    } else {
+      await userRef.set({ points: newPoints });
     }
+
+    // Atualiza na coleção 'ranking'
+    const rankingRef = db.collection('ranking').doc(currentUser.uid);
+    await rankingRef.set({
+      name: currentUser.displayName || 'Anônimo',
+      photo: currentUser.photoURL || 'imgs/user.png',
+      points: newPoints
+    }, { merge: true });
+
+    // Atualiza display de pontos na página
+    const pointsEl = document.querySelector('.user-points');
+    if (pointsEl) pointsEl.textContent = `${newPoints} pts`;
+
   } catch (error) {
     console.error('Erro ao atualizar pontuação:', error);
   }
 }
 
-// Função para atualizar ranking
-// Função para atualizar ranking na homepage
-async function updateRanking(period = "all") {
-  try {
-    const tableBody = document.querySelector("#homeRankingTable tbody");
-    if (!tableBody) return;
+// Inicializa ranking na home
+function initRanking() {
+  if (unsubscribeRanking) return;
 
-    tableBody.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
+  const rankingQuery = db.collection('ranking')
+    .orderBy('points', 'desc')
+    .limit(10);
 
-    let query = db.collection("ranking");
+  unsubscribeRanking = rankingQuery.onSnapshot((snapshot) => {
+    const homeTbody = document.querySelector("#homeRankingTable tbody");
+    if (!homeTbody) return;
+    homeTbody.innerHTML = "";
 
-    // Ranking só por pontos (você pode depois adaptar para mensal/semanal)
-    query = query.orderBy("points", "desc").limit(10);
-
-    const snapshot = await query.get();
-    tableBody.innerHTML = "";
-
-    let pos = 1;
-    snapshot.forEach(doc => {
-      const data = doc.data();
-      const tr = document.createElement("tr");
-      tr.innerHTML = `
-        <td>${pos}</td>
-        <td>
-          <img src="${data.photoURL || 'https://via.placeholder.com/30'}" 
-               style="width:30px; height:30px; border-radius:50%; margin-right:8px;">
-          ${data.displayName || data.email}
-        </td>
-        <td>${data.points || 0}</td>
-      `;
-      tableBody.appendChild(tr);
-      pos++;
-    });
-
-    if (tableBody.innerHTML === "") {
-      tableBody.innerHTML = "<tr><td colspan='3'>Nenhum dado</td></tr>";
+    if (snapshot.empty) {
+      homeTbody.innerHTML = "<tr><td colspan='3'>Nenhum dado disponível</td></tr>";
+      return;
     }
-  } catch (error) {
+
+    snapshot.forEach((doc, index) => {
+      const data = doc.data();
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${index + 1}</td>
+        <td>
+          <img src="${data.photo}" style="width:24px; border-radius:50%; margin-right:8px;">
+          ${data.name}
+        </td>
+        <td>${data.points}</td>
+      `;
+      homeTbody.appendChild(row);
+    });
+  }, (error) => {
     console.error("Erro ao carregar ranking:", error);
-  }
+    const homeTbody = document.querySelector("#homeRankingTable tbody");
+    if (homeTbody) homeTbody.innerHTML = "<tr><td colspan='3'>Erro ao carregar dados</td></tr>";
+  });
 }
 
+// Observa estado de login
+auth.onAuthStateChanged((user) => {
+  if (user) {
+    currentUser = user;
+    document.getElementById('user-photo').src = user.photoURL || 'imgs/user.png';
+    document.getElementById('user-name').textContent = user.displayName || user.email;
+    document.getElementById('user-info').style.display = 'block';
+    initRanking(); // inicia ranking
+  } else {
+    currentUser = null;
+    if (unsubscribeRanking) {
+      unsubscribeRanking();
+      unsubscribeRanking = null;
+    }
+    document.getElementById('user-info').style.display = 'none';
+  }
+});
 
-
-// Botões de teste
-const btnPlus = document.getElementById("btn-plus");
-const btnMinus = document.getElementById("btn-minus");
-if (btnPlus) btnPlus.addEventListener("click", () => updateUserScore(1));
-if (btnMinus) btnMinus.addEventListener("click", () => updateUserScore(-1));
+// Exemplo de botões de teste para adicionar/remover pontos
+document.getElementById('btn-plus')?.addEventListener('click', () => updateUserScore(1));
+document.getElementById('btn-minus')?.addEventListener('click', () => updateUserScore(-1));
 
 // Configuração do ranking
 let unsubscribeRanking = null; // Variável para controlar o "ouvinte"
@@ -3601,6 +3617,7 @@ async function addUserPoints(amount) {
   }
 
 }
+
 
 
 
