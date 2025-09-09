@@ -2539,7 +2539,7 @@ async function updateRanking(period = "all") {
 
     tableBody.innerHTML = "<tr><td colspan='3'>Carregando...</td></tr>";
 
-    let query = db.collection("users");
+    let query = db.collection("ranking");
 
     // Ranking só por pontos (você pode depois adaptar para mensal/semanal)
     query = query.orderBy("points", "desc").limit(10);
@@ -3598,4 +3598,5 @@ async function addUserPoints(amount) {
   } catch (err) {
     console.error("Erro ao adicionar pontos:", err);
   }
+
 }
