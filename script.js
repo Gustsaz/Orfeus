@@ -2373,7 +2373,7 @@ function freqToNote(freq) {
 }
 
 function updateTunerDisplay(note, octave, cents) {
-  tunerNote.textContent = `${note}${octave}`;
+  tunerNote.textContent = note; // mostra só a nota base
   if (tunerCents) tunerCents.textContent = `${cents > 0 ? '+' : ''}${cents} cents`;
   markers.forEach(m => m.style.background = "#2b2b2b");
   if (Math.abs(cents) < 5) {
@@ -3600,3 +3600,4 @@ async function addUserPoints(amount) {
   }
 
 }
+
