@@ -1,4 +1,3 @@
-const provider = new firebase.auth.GoogleAuthProvider();
 
 // ===== SISTEMA DE AUTENTICAÇÃO E USUÁRIO =====
 let currentUser = null;
@@ -3602,5 +3601,6 @@ async function addUserPoints(amount) {
   }
 
 }
+
 
 
