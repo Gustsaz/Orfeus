@@ -452,12 +452,28 @@ function goToTabFromButton(btn) {
 
 // ---------------- Cursos ----------------
 window.addEventListener("DOMContentLoaded", () => {
-  const modulesRoot = document.querySelector('#cursos .modules');
   const lessonPanel = document.getElementById('lessonPanel');
   const lessonContent = document.getElementById('lessonContent');
   const lessonClose = document.getElementById('lessonClose');
   const courseBar = document.getElementById('courseProgressBar');
   const courseText = document.getElementById('courseProgressText');
+  const modulesRoot = document.querySelector('#cursos .modules');
+  if (modulesRoot) {
+    modulesRoot.querySelectorAll('.module-open').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const moduleId = btn.closest('.module-card').dataset.module;
+        if (typeof openLesson === 'function') {
+          openLesson(moduleId.toString());
+        } else if (typeof openModule === 'function') {
+          openModule(parseInt(moduleId, 10));
+        } else {
+          console.error('Nenhuma função openLesson/openModule encontrada');
+        }
+      });
+    });
+  }
+
+
 
   async function getUserProgress() {
     if (!auth.currentUser) return { completedModules: [], lastCompleted: null };
@@ -3282,21 +3298,21 @@ const keyMap = {
   "i": "F5", "9": "F#5", "o": "G5", "0": "G#5", "p": "A5", "-": "A#5", "[": "B5"
 };
 
+// ===== ATALHOS DE TECLADO (PC) - CORREÇÃO =====
 document.addEventListener("keydown", (e) => {
-  if (keyMap[e.key]) {
-    const note = keyMap[e.key];
-    const keyEl = [...document.querySelectorAll(".key")].find(k => k.dataset.note === note);
-    if (keyEl && !keyEl.classList.contains("active")) activateKey(keyEl);
-  }
+  const mapped = keyMap[e.key];
+  if (!mapped) return;
+  const keyEl = Array.from(document.querySelectorAll(".key")).find(k => k.dataset.note === mapped);
+  if (keyEl && !keyEl.classList.contains("active")) activateKey(keyEl);
 });
 
 document.addEventListener("keyup", (e) => {
-  if (keyMap[e.key]) {
-    const note = keyMap[e.key];
-    const keyEl = [...document.querySelectorAll(".key")].find(k => k.dataset.note === note);
-    if (keyEl) deactivateKey(keyEl);
-  }
+  const mapped = keyMap[e.key];
+  if (!mapped) return;
+  const keyEl = Array.from(document.querySelectorAll(".key")).find(k => k.dataset.note === mapped);
+  if (keyEl) deactivateKey(keyEl);
 });
+
 
 // Inicializar com piano
 switchInstrument("piano");
@@ -3313,6 +3329,27 @@ document.addEventListener('DOMContentLoaded', () => {
       openModule(moduleId);
     });
   });
+
+  // Ligar botões de abrir módulo
+  document.querySelectorAll('#cursos .module-card .module-open').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const moduleId = btn.closest('.module-card').dataset.module;
+      openLesson(moduleId);
+      lessonPanel.classList.add('show'); // abre o painel lateral
+    });
+  });
+
+  // Botão de fechar painel
+  if (lessonClose) {
+    lessonClose.addEventListener('click', () => {
+      lessonPanel.classList.remove('show');
+      lessonContent.innerHTML = ""; // limpa conteúdo
+    });
+  }
+
+  // Atualiza progresso inicial
+  updateProgressUI();
+
 
   // Event listeners para o modal de perfil
   const profileModal = document.getElementById('profileModal');
