@@ -3,6 +3,32 @@
 let currentUser = null;
 let userPoints = 0;
 
+// Atualizar pontuação do usuário (quiz)
+async function updateUserScore(delta) {
+  if (!currentUser) return;
+
+  try {
+    const userRef = db.collection("users").doc(currentUser.uid);
+    await db.runTransaction(async (t) => {
+      const doc = await t.get(userRef);
+      if (!doc.exists) return;
+      const currentPoints = doc.data().points || 0;
+      const newPoints = Math.max(0, currentPoints + delta); // nunca negativo
+      t.update(userRef, { points: newPoints });
+      userPoints = newPoints;
+    });
+
+    // Atualizar UI
+    const pointsElement = document.querySelector(".user-points");
+    if (pointsElement) pointsElement.textContent = `${userPoints} pts`;
+
+    await updateRanking();
+  } catch (err) {
+    console.error("Erro ao atualizar pontuação:", err);
+  }
+}
+
+
 // Função para renderizar a UI de autenticação
 function renderAuthUi(user) {
   const authUI = document.getElementById('auth-ui');
@@ -91,7 +117,7 @@ async function loginWithGoogle() {
       displayName: user.displayName || user.email,
       email: user.email,
       photoURL: user.photoURL || 'https://via.placeholder.com/80',
-      points: 0,
+      points: firebase.firestore.FieldValue.increment(0), // mantém os pontos existentes
       createdAt: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
@@ -2499,7 +2525,6 @@ async function googleLogout() {
 auth.onAuthStateChanged(user => renderUser(user));
 updateProgressUI();
 
-let currentUser = null;
 let unsubscribeRanking = null;
 
 // Atualiza a pontuação do usuário
@@ -2597,8 +2622,7 @@ auth.onAuthStateChanged((user) => {
 document.getElementById('btn-plus')?.addEventListener('click', () => updateUserScore(1));
 document.getElementById('btn-minus')?.addEventListener('click', () => updateUserScore(-1));
 
-// Configuração do ranking
-let unsubscribeRanking = null; // Variável para controlar o "ouvinte"
+
 
 function initRanking() {
   // 1. Se já existe um ouvinte, não cria outro.
