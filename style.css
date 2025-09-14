@@ -1044,6 +1044,107 @@ body {
   background: #444;
 }
 
+/* Ranking na aba completa */
+.ranking-full {
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 8px;
+  padding: 20px;
+  height: 80vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Importante para controlar o scroll interno */
+}
+
+.ranking-full .ranking-tabs {
+  margin-bottom: 15px;
+  flex-shrink: 0; /* Evita que os botões sejam comprimidos */
+}
+
+.ranking-full .ranking-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 6px;
+  background: #0d0d0d;
+  min-height: 0; /* Permite que o flex item diminua */
+  max-height: calc(80vh - 80px); /* Altura máxima considerando padding e tabs */
+}
+
+.ranking-full .ranking-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+.ranking-full .ranking-scroll-container::-webkit-scrollbar-thumb {
+  background: #555;
+  border-radius: 4px;
+}
+
+.ranking-full .ranking-scroll-container::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 4px;
+}
+
+.ranking-full .rk-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.ranking-full .rk-table th,
+.ranking-full .rk-table td {
+  border-bottom: 1px solid #222;
+  color: #ddd !important;
+  padding: 4px 6px;
+  text-align: left;
+  background: #0d0d0d !important;
+  min-height: 28px;
+  line-height: 1.1;
+}
+
+.ranking-full .rk-table th {
+  background: #1a1a1a !important;
+  color: #fff !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+}
+
+.ranking-full .rk-table tbody tr:hover {
+  background: #1a1a1a !important;
+}
+
+.ranking-full .rk-table .user-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  margin-right: 12px;
+}
+
+/* Responsividade para ranking */
+@media (max-width: 768px) {
+  .home-ranking {
+    height: 60vh;
+  }
+
+  .ranking-full {
+    height: 70vh;
+  }
+
+  .ranking-scroll-container {
+    max-height: calc(60vh - 60px);
+  }
+
+  .ranking-full .ranking-scroll-container {
+    max-height: calc(70vh - 80px);
+  }
+}
+
 /* Painel principal preto */
 .main-panel {
   background: linear-gradient(180deg, rgba(10, 10, 10, 0.9), rgba(10, 10, 10, 0.6));
@@ -1231,40 +1332,138 @@ body {
   border-radius: 8px;
   padding: 12px;
   height: 70vh;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Importante para controlar o scroll interno */
+}
+
+.ranking-scroll-container {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-radius: 6px;
+  background: #0d0d0d;
+  min-height: 0; /* Permite que o flex item diminua */
+  max-height: calc(70vh - 60px); /* Altura máxima considerando padding e tabs */
+}
+
+.ranking-scroll-container::-webkit-scrollbar {
+  width: 12px;
+}
+
+.ranking-scroll-container::-webkit-scrollbar-thumb {
+  background: #666;
+  border-radius: 6px;
+  border: 2px solid #1a1a1a;
+}
+
+.ranking-scroll-container::-webkit-scrollbar-thumb:hover {
+  background: #888;
+}
+
+.ranking-scroll-container::-webkit-scrollbar-track {
+  background: #1a1a1a;
+  border-radius: 6px;
+}
+
+.ranking-scroll-container::-webkit-scrollbar-corner {
+  background: #1a1a1a;
 }
 
 .ranking-tabs {
   display: flex;
   gap: 8px;
-  margin-bottom: 8px;
+  margin-bottom: 15px;
+  justify-content: center;
 }
 
 .rk-btn {
   background: #0d0d0d;
   color: #fff;
   border: 1px solid #262626;
-  padding: 8px 10px;
+  padding: 10px 16px;
   font-weight: 800;
   text-transform: uppercase;
   cursor: pointer;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  font-size: 14px;
+  min-width: 80px;
+}
+
+.rk-btn:hover {
+  background: #1a1a1a;
+  border-color: #444;
+  transform: translateY(-1px);
 }
 
 .rk-btn.active {
-  background: #1a1a1a;
+  background: #e1ff00;
+  color: #000;
+  border-color: #e1ff00;
+  box-shadow: 0 2px 8px rgba(225, 255, 0, 0.3);
 }
 
 .rk-table {
   width: 100%;
   border-collapse: collapse;
+  background: #0d0d0d;
+  border: 1px solid #222;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
 .rk-table th,
 .rk-table td {
   border-bottom: 1px solid #222;
-  color: #ddd;
-  padding: 6px;
+  color: #ddd !important;
+  padding: 4px 6px;
   text-align: left;
+  background: #0d0d0d !important;
+  min-height: 28px;
+  line-height: 1.1;
+}
+
+.rk-table th {
+  background: #1a1a1a !important;
+  color: #fff !important;
+  font-weight: bold;
+  text-transform: uppercase;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+}
+
+.rk-table tbody tr:hover {
+  background: #1a1a1a !important;
+}
+
+.rk-table .user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 2px solid #333;
+  margin-right: 8px;
+}
+
+/* Forçar texto branco na tabela de ranking */
+.home-ranking .rk-table,
+.ranking-full .rk-table {
+  color: #ddd !important;
+}
+
+.home-ranking .rk-table th,
+.home-ranking .rk-table td,
+.ranking-full .rk-table th,
+.ranking-full .rk-table td {
+  color: #ddd !important;
+}
+
+.home-ranking .rk-table th {
+  color: #fff !important;
+}
+
+.ranking-full .rk-table th {
+  color: #fff !important;
 }
 
 .cta {
