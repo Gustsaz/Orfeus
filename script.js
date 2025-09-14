@@ -252,6 +252,45 @@ async function updateUserProgress(moduleId) {
   }
 }
 
+// Função para atualizar o ranking global
+async function updateRanking() {
+  if (!currentUser) {
+    console.log('updateRanking: Nenhum usuário logado');
+    return;
+  }
+
+  try {
+    console.log('updateRanking: Iniciando atualização para usuário:', currentUser.uid);
+
+    const userRef = db.collection('users').doc(currentUser.uid);
+    const rankingRef = db.collection('ranking').doc(currentUser.uid);
+
+    const userDoc = await userRef.get();
+
+    if (!userDoc.exists) {
+      console.log('updateRanking: Documento do usuário não encontrado');
+      return;
+    }
+
+    const userData = userDoc.data();
+    console.log('updateRanking: Dados do usuário:', userData);
+
+    const rankingData = {
+      name: userData.displayName || userData.name || 'Anônimo',
+      photo: userData.photoURL || userData.photo || 'imgs/user.png',
+      points: userData.points || 0,
+      lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+      userId: currentUser.uid
+    };
+
+    await rankingRef.set(rankingData, { merge: true });
+    console.log('updateRanking: Ranking atualizado com sucesso:', rankingData);
+
+  } catch (error) {
+    console.error('Erro ao atualizar ranking:', error);
+  }
+}
+
 // Função para atualizar a UI do progresso
 async function updateProgressUI() {
   if (!currentUser) return;
@@ -510,8 +549,6 @@ window.addEventListener("DOMContentLoaded", () => {
 
     });
   }
-  updateRanking();
-
 
   async function updateProgressUI() {
     const progress = await getUserProgress();
@@ -2579,40 +2616,102 @@ async function updateUserScore(delta) {
 }
 
 // Inicializa ranking na home
-function initRanking() {
-  if (unsubscribeRanking) return;
+function initRanking(period = 'all') {
+  console.log('initRanking: Iniciando ranking com período:', period);
 
-  const rankingQuery = db.collection('ranking')
-    .orderBy('points', 'desc')
+  // 1. Se já existe um ouvinte, não cria outro.
+  if (unsubscribeRanking) {
+    console.log('initRanking: Removendo ouvinte anterior');
+    unsubscribeRanking();
+  }
+
+  let rankingQuery = db.collection("ranking");
+  console.log('initRanking: Query base criada');
+
+  // Filtrar por período
+  if (period === 'monthly') {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    rankingQuery = rankingQuery.where("lastUpdated", ">=", startOfMonth);
+    console.log('initRanking: Filtro mensal aplicado:', startOfMonth);
+  } else if (period === 'weekly') {
+    const now = new Date();
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    startOfWeek.setHours(0, 0, 0, 0);
+    rankingQuery = rankingQuery.where("lastUpdated", ">=", startOfWeek);
+    console.log('initRanking: Filtro semanal aplicado:', startOfWeek);
+  }
+  // Para período "all", não aplicamos filtro de data para incluir todos os usuários
+
+  rankingQuery = rankingQuery
+    .orderBy("points", "desc")
     .limit(10);
 
-  unsubscribeRanking = rankingQuery.onSnapshot((snapshot) => {
-    const homeTbody = document.querySelector("#homeRankingTable tbody");
-    if (!homeTbody) return;
-    homeTbody.innerHTML = "";
+  console.log('initRanking: Query final configurada');
 
-    if (snapshot.empty) {
-      homeTbody.innerHTML = "<tr><td colspan='3'>Nenhum dado disponível</td></tr>";
-      return;
-    }
+  // 2. Guarda a função para "desligar" o ouvinte depois
+  unsubscribeRanking = rankingQuery.onSnapshot((snap) => {
+    console.log('initRanking: Snapshot recebido, documentos:', snap.size);
 
-    snapshot.forEach((doc, index) => {
-      const data = doc.data();
-      const row = document.createElement('tr');
-      row.innerHTML = `
-        <td>${index + 1}</td>
-        <td>
-          <img src="${data.photo}" style="width:24px; border-radius:50%; margin-right:8px;">
-          ${data.name}
-        </td>
-        <td>${data.points}</td>
-      `;
-      homeTbody.appendChild(row);
-    });
+    // 3. Função para atualizar tabelas
+    const updateTables = () => {
+      // Seleciona o corpo de AMBAS as tabelas
+      const rankingTbody = document.querySelector("#ranking-table tbody");
+      const homeTbody = document.querySelector("#homeRankingTable tbody");
+
+      console.log('initRanking: Elementos encontrados - rankingTbody:', !!rankingTbody, 'homeTbody:', !!homeTbody);
+
+      // Se nenhuma tabela foi encontrada, tenta novamente em 100ms
+      if (!rankingTbody && !homeTbody) {
+        console.log('initRanking: Nenhuma tabela encontrada, tentando novamente...');
+        setTimeout(updateTables, 100);
+        return;
+      }
+
+      // Limpa as tabelas se existirem
+      if (rankingTbody) rankingTbody.innerHTML = "";
+      if (homeTbody) homeTbody.innerHTML = "";
+
+      if (snap.empty) {
+        console.log('initRanking: Nenhum documento encontrado na coleção ranking');
+        const emptyRow = `<tr><td colspan="3" style="text-align: center; color: #ddd; padding: 20px; background: #0d0d0d;">Nenhum usuário encontrado no ranking</td></tr>`;
+        if (rankingTbody) rankingTbody.innerHTML = emptyRow;
+        if (homeTbody) homeTbody.innerHTML = emptyRow;
+        return;
+      }
+
+      console.log('initRanking: Processando documentos...');
+      let index = 1;
+      snap.forEach((doc) => {
+        const data = doc.data();
+        console.log('initRanking: Documento', index, ':', data);
+
+        // Cria a linha da tabela para o ranking completo
+        const fullRankingRow = `<tr><td>${index}</td><td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar"></td><td>${data.name || 'Anônimo'}</td><td>${data.points || 0}</td></tr>`;
+
+        // Cria a linha da tabela para a home
+        const homeRankingRow = `<tr><td>${index}</td><td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar" style="width:24px; border-radius:50%; margin-right: 8px;">${data.name || 'Anônimo'}</td><td>${data.points || 0}</td></tr>`;
+
+        // Adiciona a linha em cada tabela se existir
+        if (rankingTbody) rankingTbody.innerHTML += fullRankingRow;
+        if (homeTbody) homeTbody.innerHTML += homeRankingRow;
+        index++;
+      });
+
+      console.log('initRanking: Ranking atualizado com sucesso');
+    };
+
+    // Chama a função de atualização
+    updateTables();
+
   }, (error) => {
-    console.error("Erro ao carregar ranking:", error);
+    console.error("Erro no ranking:", error);
+    const errorRow = `<tr><td colspan="3">Erro ao carregar ranking</td></tr>`;
+    const rankingTbody = document.querySelector("#ranking-table tbody");
     const homeTbody = document.querySelector("#homeRankingTable tbody");
-    if (homeTbody) homeTbody.innerHTML = "<tr><td colspan='3'>Erro ao carregar dados</td></tr>";
+
+    if (rankingTbody) rankingTbody.innerHTML = errorRow;
+    if (homeTbody) homeTbody.innerHTML = errorRow;
   });
 }
 
@@ -2638,66 +2737,278 @@ auth.onAuthStateChanged((user) => {
 document.getElementById('btn-plus')?.addEventListener('click', () => updateUserScore(1));
 document.getElementById('btn-minus')?.addEventListener('click', () => updateUserScore(-1));
 
+// Função de teste para verificar ranking
+async function testRanking() {
+  console.log('=== TESTE DO RANKING ===');
+  console.log('Usuário atual:', currentUser);
 
-
-function initRanking() {
-  // 1. Se já existe um ouvinte, não cria outro.
-  if (unsubscribeRanking) {
+  if (!currentUser) {
+    console.log('Nenhum usuário logado');
     return;
   }
 
-  const rankingQuery = db.collection("ranking")
-    .orderBy("score", "desc")
-    .limit(10);
-
-  // 2. Guarda a função para "desligar" o ouvinte depois
-  unsubscribeRanking = rankingQuery.onSnapshot((snap) => {
-    // 3. Seleciona o corpo de AMBAS as tabelas
-    const rankingTbody = document.querySelector("#ranking-table tbody");
-    const homeTbody = document.querySelector("#homeRankingTable tbody");
-
-    if (!rankingTbody || !homeTbody) return;
-
-    // Limpa as tabelas
-    rankingTbody.innerHTML = "";
-    homeTbody.innerHTML = "";
-
-    if (snap.empty) {
-      const emptyRow = `<tr><td colspan="3">Nenhum dado disponível</td></tr>`;
-      rankingTbody.innerHTML = emptyRow;
-      homeTbody.innerHTML = emptyRow;
-      return;
+  try {
+    // Verificar dados do usuário
+    const userDoc = await db.collection('users').doc(currentUser.uid).get();
+    if (userDoc.exists) {
+      console.log('Dados do usuário:', userDoc.data());
+    } else {
+      console.log('Documento do usuário não encontrado');
     }
 
-    snap.forEach((doc, index) => {
+    // Verificar dados do ranking
+    const rankingDoc = await db.collection('ranking').doc(currentUser.uid).get();
+    if (rankingDoc.exists) {
+      console.log('Dados do ranking:', rankingDoc.data());
+    } else {
+      console.log('Documento do ranking não encontrado');
+    }
+
+    // Forçar atualização do ranking
+    await updateRanking();
+
+    // Verificar se a tabela existe
+    const homeTbody = document.querySelector("#homeRankingTable tbody");
+    console.log('Elemento da tabela encontrado:', !!homeTbody);
+
+    if (homeTbody) {
+      console.log('Conteúdo atual da tabela:', homeTbody.innerHTML);
+    }
+
+  } catch (error) {
+    console.error('Erro no teste:', error);
+  }
+}
+
+// Adicionar função global para teste
+window.testRanking = testRanking;
+
+// Função para adicionar usuários de teste ao ranking
+async function addTestUsers() {
+  console.log('=== ADICIONANDO USUÁRIOS DE TESTE ===');
+
+  if (!currentUser) {
+    console.log('Nenhum usuário logado');
+    return;
+  }
+
+  const testUsers = [
+    {
+      name: 'João Silva',
+      photo: 'https://via.placeholder.com/40/FF6B6B/FFFFFF?text=JS',
+      points: 250,
+      userId: 'test-user-1'
+    },
+    {
+      name: 'Maria Santos',
+      photo: 'https://via.placeholder.com/40/4ECDC4/FFFFFF?text=MS',
+      points: 180,
+      userId: 'test-user-2'
+    },
+    {
+      name: 'Pedro Oliveira',
+      photo: 'https://via.placeholder.com/40/45B7D1/FFFFFF?text=PO',
+      points: 320,
+      userId: 'test-user-3'
+    },
+    {
+      name: 'Ana Costa',
+      photo: 'https://via.placeholder.com/40/F7DC6F/FFFFFF?text=AC',
+      points: 95,
+      userId: 'test-user-4'
+    },
+    {
+      name: 'Carlos Ferreira',
+      photo: 'https://via.placeholder.com/40/BB8FCE/FFFFFF?text=CF',
+      points: 410,
+      userId: 'test-user-5'
+    }
+  ];
+
+  try {
+    for (const user of testUsers) {
+      const rankingRef = db.collection('ranking').doc(user.userId);
+      await rankingRef.set({
+        name: user.name,
+        photo: user.photo,
+        points: user.points,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+        userId: user.userId
+      }, { merge: true });
+      console.log(`Usuário ${user.name} adicionado com ${user.points} pontos`);
+    }
+
+    console.log('=== USUÁRIOS DE TESTE ADICIONADOS ===');
+    console.log('Execute testRanking() novamente para ver o ranking completo');
+
+    // Atualizar ranking após adicionar usuários de teste
+    setTimeout(() => {
+      initRanking();
+    }, 500);
+
+  } catch (error) {
+    console.error('Erro ao adicionar usuários de teste:', error);
+  }
+}
+
+// Função para atualizar usuários existentes sem lastUpdated
+async function updateExistingUsers() {
+  console.log('=== ATUALIZANDO USUÁRIOS EXISTENTES ===');
+
+  if (!currentUser) {
+    console.log('Nenhum usuário logado');
+    return;
+  }
+
+  try {
+    // Buscar todos os usuários na coleção ranking
+    const rankingSnapshot = await db.collection('ranking').get();
+
+    console.log(`Encontrados ${rankingSnapshot.size} usuários no ranking`);
+
+    let updatedCount = 0;
+    for (const doc of rankingSnapshot.docs) {
       const data = doc.data();
+      console.log(`Verificando usuário: ${data.name || data.userId}, pontos: ${data.points}, lastUpdated:`, data.lastUpdated);
 
-      // Cria a linha da tabela uma vez
-      const row = document.createElement("tr");
+      // Se não tem lastUpdated, adiciona
+      if (!data.lastUpdated) {
+        await doc.ref.update({
+          lastUpdated: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        updatedCount++;
+        console.log(`✅ Atualizado usuário: ${data.name || data.userId}`);
+      } else {
+        console.log(`⏭️ Usuário já tem lastUpdated: ${data.name || data.userId}`);
+      }
+    }
 
-      const pos = `<td>${index + 1}</td>`;
-      const user = `<td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar"> ${data.name || 'Anônimo'}</td>`;
-      const score = `<td>${data.score || 0}</td>`;
+    console.log(`=== ${updatedCount} USUÁRIOS ATUALIZADOS ===`);
 
-      // Monta a linha completa
-      // OBS: A tabela do ranking completo tem 3 colunas (Pos, Usuário, Pontos)
-      // A tabela da home tem um formato diferente (Usuário com foto embutida)
-      // Vamos adaptar:
-      const fullRankingRow = `<tr><td>${index + 1}</td><td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar"></td><td>${data.name || 'Anônimo'}</td><td>${data.score || 0}</td></tr>`;
-      const homeRankingRow = `<tr><td>${index + 1}</td><td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar" style="width:24px; border-radius:50%; margin-right: 8px;">${data.name || 'Anônimo'}</td><td>${data.score || 0}</td></tr>`;
+    // Recarregar ranking após atualização
+    setTimeout(() => {
+      initRanking();
+    }, 500);
 
-      // Adiciona a linha em cada tabela
-      rankingTbody.innerHTML += fullRankingRow; // Adaptar as colunas se necessário
-      homeTbody.innerHTML += homeRankingRow;
+  } catch (error) {
+    console.error('Erro ao atualizar usuários existentes:', error);
+  }
+}
+
+// Função para verificar todos os usuários no ranking
+async function checkAllRankingUsers() {
+  console.log('=== VERIFICANDO TODOS OS USUÁRIOS NO RANKING ===');
+
+  try {
+    const rankingSnapshot = await db.collection('ranking').get();
+
+    console.log(`Total de usuários no ranking: ${rankingSnapshot.size}`);
+
+    rankingSnapshot.docs.forEach((doc, index) => {
+      const data = doc.data();
+      console.log(`${index + 1}. ${data.name || 'Sem nome'} - ${data.points || 0} pontos - ID: ${data.userId || doc.id}`);
+      console.log(`   lastUpdated: ${data.lastUpdated ? new Date(data.lastUpdated.toDate()).toLocaleString() : 'NÃO TEM'}`);
+      console.log(`   photo: ${data.photo || 'NÃO TEM'}`);
+      console.log('---');
     });
 
-  }, (error) => {
-    console.error("Erro no ranking:", error);
-    const errorRow = `<tr><td colspan="3">Erro ao carregar dados</td></tr>`;
-    document.querySelector("#ranking-table tbody").innerHTML = errorRow;
-    document.querySelector("#homeRankingTable tbody").innerHTML = errorRow;
-  });
+  } catch (error) {
+    console.error('Erro ao verificar usuários:', error);
+  }
 }
+
+// Função para popular ranking automaticamente
+async function populateRanking() {
+  console.log('=== POPULANDO RANKING COM USUÁRIOS DE TESTE ===');
+
+  if (!currentUser) {
+    console.log('Nenhum usuário logado');
+    return;
+  }
+
+  const testUsers = [
+    {
+      name: 'João Silva',
+      photo: 'https://via.placeholder.com/40/FF6B6B/FFFFFF?text=JS',
+      points: 250,
+      userId: 'test-user-1'
+    },
+    {
+      name: 'Maria Santos',
+      photo: 'https://via.placeholder.com/40/4ECDC4/FFFFFF?text=MS',
+      points: 180,
+      userId: 'test-user-2'
+    },
+    {
+      name: 'Pedro Oliveira',
+      photo: 'https://via.placeholder.com/40/45B7D1/FFFFFF?text=PO',
+      points: 320,
+      userId: 'test-user-3'
+    },
+    {
+      name: 'Ana Costa',
+      photo: 'https://via.placeholder.com/40/F7DC6F/FFFFFF?text=AC',
+      points: 95,
+      userId: 'test-user-4'
+    },
+    {
+      name: 'Carlos Ferreira',
+      photo: 'https://via.placeholder.com/40/BB8FCE/FFFFFF?text=CF',
+      points: 410,
+      userId: 'test-user-5'
+    },
+    {
+      name: 'Beatriz Lima',
+      photo: 'https://via.placeholder.com/40/85C1E9/FFFFFF?text=BL',
+      points: 275,
+      userId: 'test-user-6'
+    },
+    {
+      name: 'Roberto Dias',
+      photo: 'https://via.placeholder.com/40/F8C471/FFFFFF?text=RD',
+      points: 150,
+      userId: 'test-user-7'
+    },
+    {
+      name: 'Fernanda Rocha',
+      photo: 'https://via.placeholder.com/40/82E0AA/FFFFFF?text=FR',
+      points: 380,
+      userId: 'test-user-8'
+    }
+  ];
+
+  try {
+    console.log('Adicionando usuários de teste...');
+
+    for (const user of testUsers) {
+      const rankingRef = db.collection('ranking').doc(user.userId);
+      await rankingRef.set({
+        name: user.name,
+        photo: user.photo,
+        points: user.points,
+        lastUpdated: firebase.firestore.FieldValue.serverTimestamp(),
+        userId: user.userId
+      }, { merge: true });
+      console.log(`✅ ${user.name} adicionado com ${user.points} pontos`);
+    }
+
+    console.log('=== RANKING POPULADO COM SUCESSO ===');
+    console.log('Agora você deve ver vários usuários no ranking!');
+
+    // Recarregar ranking
+    setTimeout(() => {
+      initRanking();
+    }, 1000);
+
+  } catch (error) {
+    console.error('Erro ao popular ranking:', error);
+  }
+}
+
+// Adicionar função global
+window.addTestUsers = addTestUsers;
+window.updateExistingUsers = updateExistingUsers;
+window.populateRanking = populateRanking;
 
 // Chame a função para "desligar" o ouvinte quando o usuário fizer logout
 auth.onAuthStateChanged(async (user) => {
@@ -2716,13 +3027,126 @@ auth.onAuthStateChanged(async (user) => {
   }
 });
 
-// Adiciona o ouvinte de clique CORRIGIDO para atividades (antigo ranking)
-document.querySelector('.tab-btn[data-tab="atividades"]')?.addEventListener("click", () => {
+// Adiciona o ouvinte de clique CORRIGIDO para ranking
+document.querySelector('.tab-btn[data-tab="ranking"]')?.addEventListener("click", () => {
   // Apenas garante que a função seja chamada se o usuário já estiver logado
   if (currentUser) {
-    initRanking();
+    initFullRanking();
   }
 });
+
+// Função para inicializar ranking completo na aba dedicada
+function initFullRanking(period = 'all') {
+  console.log('initFullRanking: Iniciando ranking completo com período:', period);
+
+  // Se já existe um ouvinte, não cria outro
+  if (unsubscribeRanking) {
+    console.log('initFullRanking: Removendo ouvinte anterior');
+    unsubscribeRanking();
+  }
+
+  let rankingQuery = db.collection("ranking");
+  console.log('initFullRanking: Query base criada');
+
+  // Filtrar por período
+  if (period === 'monthly') {
+    const now = new Date();
+    const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+    rankingQuery = rankingQuery.where("lastUpdated", ">=", startOfMonth);
+    console.log('initFullRanking: Filtro mensal aplicado:', startOfMonth);
+  } else if (period === 'weekly') {
+    const now = new Date();
+    const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+    startOfWeek.setHours(0, 0, 0, 0);
+    rankingQuery = rankingQuery.where("lastUpdated", ">=", startOfWeek);
+    console.log('initFullRanking: Filtro semanal aplicado:', startOfWeek);
+  }
+
+  rankingQuery = rankingQuery
+    .orderBy("points", "desc")
+    .limit(50); // Mostra mais usuários na aba completa
+
+  console.log('initFullRanking: Query final configurada');
+
+  // Guarda a função para "desligar" o ouvinte depois
+  unsubscribeRanking = rankingQuery.onSnapshot((snap) => {
+    console.log('initFullRanking: Snapshot recebido, documentos:', snap.size);
+
+    // Função para atualizar a tabela completa
+    const updateFullTable = () => {
+      const fullTbody = document.querySelector("#fullRankingTable tbody");
+
+      console.log('initFullRanking: Elemento encontrado:', !!fullTbody);
+
+      if (!fullTbody) {
+        console.log('initFullRanking: Tabela completa não encontrada, tentando novamente...');
+        setTimeout(updateFullTable, 100);
+        return;
+      }
+
+      // Limpa a tabela
+      fullTbody.innerHTML = "";
+
+      if (snap.empty) {
+        console.log('initFullRanking: Nenhum documento encontrado na coleção ranking');
+        const emptyRow = `<tr><td colspan="4" style="text-align: center; color: #666; padding: 40px;">Nenhum usuário encontrado no ranking</td></tr>`;
+        fullTbody.innerHTML = emptyRow;
+        return;
+      }
+
+      console.log('initFullRanking: Processando documentos...');
+      let index = 1;
+      snap.forEach((doc) => {
+        const data = doc.data();
+        console.log('initFullRanking: Documento', index, ':', data);
+
+        // Formatar data da última atividade
+        let lastActivity = 'Nunca';
+        if (data.lastUpdated) {
+          const date = data.lastUpdated.toDate();
+          const now = new Date();
+          const diffTime = Math.abs(now - date);
+          const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
+          if (diffDays === 1) {
+            lastActivity = 'Hoje';
+          } else if (diffDays === 2) {
+            lastActivity = 'Ontem';
+          } else if (diffDays <= 7) {
+            lastActivity = `${diffDays - 1} dias atrás`;
+          } else {
+            lastActivity = date.toLocaleDateString('pt-BR');
+          }
+        }
+
+        // Cria a linha da tabela completa
+        const fullRankingRow = `<tr>
+          <td>${index}</td>
+          <td><img src="${data.photo || 'imgs/user.png'}" class="user-avatar" style="width:40px; height:40px; border-radius:50%; margin-right:12px;">${data.name || 'Anônimo'}</td>
+          <td>${data.points || 0}</td>
+          <td>${lastActivity}</td>
+        </tr>`;
+
+        fullTbody.innerHTML += fullRankingRow;
+        index++;
+      });
+
+      console.log('initFullRanking: Ranking completo atualizado com sucesso');
+    };
+
+    // Chama a função de atualização
+    updateFullTable();
+
+  }, (error) => {
+    console.error("Erro no ranking completo:", error);
+    const errorRow = `<tr><td colspan="4">Erro ao carregar ranking completo</td></tr>`;
+    const fullTbody = document.querySelector("#fullRankingTable tbody");
+
+    if (fullTbody) {
+      fullTbody.innerHTML = errorRow;
+    }
+  });
+}
 
 // ===== FUNCIONALIDADE DO TONEARM =====
 if (tonearm) {
@@ -3445,6 +3869,27 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Event listeners para botões de período do ranking
+  document.querySelectorAll('.rk-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      // Remove active de todos os botões
+      document.querySelectorAll('.rk-btn').forEach(b => b.classList.remove('active'));
+      // Ativa o botão clicado
+      btn.classList.add('active');
+
+      // Atualiza o ranking com o período selecionado
+      const period = btn.dataset.period;
+
+      // Verifica se estamos na aba completa ou na home
+      const isFullRanking = e.target.closest('#ranking') !== null;
+      if (isFullRanking) {
+        initFullRanking(period);
+      } else {
+        initRanking(period);
+      }
+    });
+  });
 });
 
 /// ----- Acessibilidade -----
@@ -3678,9 +4123,3 @@ async function addUserPoints(amount) {
   }
 
 }
-
-
-
-
-
-
