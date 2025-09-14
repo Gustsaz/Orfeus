@@ -4,11 +4,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ff6b35">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Orfeus">
   <title>Orfeus - Home</title>
   <!-- Favicons -->
   <link rel="icon" type="image/png" sizes="32x32" href="imgs/orfeus_logo.png">
   <link rel="icon" type="image/png" sizes="16x16" href="imgs/orfeus_logo.png">
   <link rel="apple-touch-icon" href="imgs/orfeus_logo.png">
+  <!-- PWA Manifest -->
+  <link rel="manifest" href="manifest.json">
 
   <link rel="stylesheet" href="style.css">
   <script src="https://unpkg.com/tone@14.8.39/build/Tone.js"></script>
@@ -470,6 +476,44 @@
 
 
   <script src="script.js"></script>
+
+  <!-- Debug script for PWA testing -->
+  <script>
+    // Debug básico que funciona independente do script principal
+    console.log('=== PWA DEBUG INICIANDO ===');
+
+    // Função global de debug
+    window.debugPWA = function() {
+      console.log('🔍 PWA STATUS:');
+      console.log('• Service Worker:', 'serviceWorker' in navigator ? '✅' : '❌');
+      console.log('• BeforeInstallPrompt:', 'onbeforeinstallprompt' in window ? '✅' : '❌');
+      console.log('• Manifest Link:', 'manifest' in document.createElement('link') ? '✅' : '❌');
+      console.log('• Standalone Mode:', window.matchMedia('(display-mode: standalone)').matches ? '✅' : '❌');
+
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.getRegistrations().then(function(regs) {
+          console.log('• SW Registrations:', regs.length);
+          regs.forEach(function(reg, i) {
+            console.log('  -', reg.scope, reg.active ? '(ativo)' : '(inativo)');
+          });
+        });
+      }
+
+      fetch('./manifest.json').then(function(r) {
+        return r.json();
+      }).then(function(m) {
+        console.log('• Manifest:', m.name, '(' + m.icons.length + ' ícones)');
+      }).catch(function(e) {
+        console.log('• Manifest Error:', e.message);
+      });
+    };
+
+    // Executar automaticamente
+    setTimeout(function() {
+      console.log('=== VERIFICAÇÃO AUTOMÁTICA DA PWA ===');
+      debugPWA();
+    }, 500);
+  </script>
 </body>
 
 
