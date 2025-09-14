@@ -6,7 +6,7 @@
   "display": "standalone",
   "background_color": "#1a1a1a",
   "theme_color": "#ff6b35",
-  "orientation": "portrait-primary",
+  "orientation": "fullscreen",
   "scope": "/",
   "lang": "pt-BR",
   "categories": ["education", "music"],
@@ -23,3 +23,4 @@
     }
   ]
 }
+
