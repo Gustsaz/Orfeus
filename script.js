@@ -4123,3 +4123,216 @@ async function addUserPoints(amount) {
   }
 
 }
+
+// ===== SERVICE WORKER REGISTRATION =====
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(registration => {
+        console.log('Service Worker registrado com sucesso:', registration.scope);
+      })
+      .catch(error => {
+        console.log('Falha ao registrar Service Worker:', error);
+      });
+  });
+}
+
+// ===== PWA INSTALLATION DEBUG =====
+let deferredPrompt;
+
+console.log('PWA: Script carregado, verificando suporte...');
+
+// Verificar suporte básico
+console.log('PWA: Service Worker suportado:', 'serviceWorker' in navigator);
+console.log('PWA: BeforeInstallPrompt suportado:', 'onbeforeinstallprompt' in window);
+console.log('PWA: Manifest link suportado:', 'manifest' in document.createElement('link'));
+
+window.addEventListener('beforeinstallprompt', (e) => {
+  console.log('PWA: ✅ beforeinstallprompt event fired!');
+  console.log('PWA: Event details:', e);
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // Mostrar botão de instalação
+  showInstallButton();
+});
+
+window.addEventListener('appinstalled', (evt) => {
+  console.log('PWA: ✅ App foi instalada!');
+  console.log('PWA: Install event:', evt);
+});
+
+// Função para mostrar botão de instalação
+function showInstallButton() {
+  console.log('PWA: Mostrando botão de instalação...');
+
+  // Remover botão existente se houver
+  const existingBtn = document.getElementById('pwa-install-btn');
+  if (existingBtn) existingBtn.remove();
+
+  const installBtn = document.createElement('button');
+  installBtn.id = 'pwa-install-btn';
+  installBtn.innerHTML = '📱 Instalar App';
+  installBtn.style.cssText = `
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background: #ff6b35;
+    color: white;
+    border: none;
+    padding: 15px 25px;
+    border-radius: 8px;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 10000;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+  `;
+
+  installBtn.addEventListener('click', async () => {
+    console.log('PWA: Botão de instalação clicado');
+
+    if (deferredPrompt) {
+      console.log('PWA: Usando deferredPrompt nativo');
+      deferredPrompt.prompt();
+      const { outcome } = await deferredPrompt.userChoice;
+      console.log('PWA: User choice result:', outcome);
+      deferredPrompt = null;
+      installBtn.remove();
+    } else {
+      console.log('PWA: Tentando instalação manual (fallback)');
+      // Fallback para navegadores que não suportam beforeinstallprompt
+      alert('Para instalar este app:\n\n1. No Chrome: Clique no ícone de instalação na barra de endereço\n2. No Firefox: Adicione aos favoritos ou à tela inicial\n3. No Edge: Use o menu "Apps"');
+    }
+  });
+
+  // Hover effect
+  installBtn.addEventListener('mouseenter', () => {
+    installBtn.style.transform = 'scale(1.05)';
+    installBtn.style.boxShadow = '0 6px 16px rgba(0,0,0,0.5)';
+  });
+
+  installBtn.addEventListener('mouseleave', () => {
+    installBtn.style.transform = 'scale(1)';
+    installBtn.style.boxShadow = '0 4px 12px rgba(0,0,0,0.4)';
+  });
+
+  document.body.appendChild(installBtn);
+  console.log('PWA: Botão de instalação adicionado ao DOM');
+}
+
+// Verificar status da PWA
+window.addEventListener('load', () => {
+  console.log('PWA: Página carregada, verificando status...');
+
+  // Verificar se está em modo standalone
+  const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
+  console.log('PWA: Está em modo standalone:', isStandalone);
+
+  if (isStandalone) {
+    console.log('PWA: ✅ App está rodando em modo standalone');
+  } else {
+    console.log('PWA: App está rodando no navegador normal');
+  }
+
+  // Verificar manifest
+  const manifestLink = document.querySelector('link[rel="manifest"]');
+  console.log('PWA: Link do manifest encontrado:', !!manifestLink);
+  if (manifestLink) {
+    console.log('PWA: URL do manifest:', manifestLink.href);
+  }
+
+  // Verificar service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(registrations => {
+      console.log('PWA: Service Workers registrados:', registrations.length);
+      registrations.forEach(reg => {
+        console.log('PWA: SW registrado:', reg.scope, reg.active ? 'ativo' : 'inativo');
+      });
+    });
+  }
+
+  // Aguardar um pouco e verificar se o evento beforeinstallprompt foi disparado
+  setTimeout(() => {
+    console.log('PWA: Verificando se beforeinstallprompt foi disparado...');
+    console.log('PWA: deferredPrompt existe:', !!deferredPrompt);
+
+    if (!deferredPrompt && !isStandalone) {
+      console.log('PWA: beforeinstallprompt não foi disparado, mostrando botão manual...');
+      showInstallButton();
+    } else if (deferredPrompt) {
+      console.log('PWA: beforeinstallprompt já foi disparado, botão deve aparecer automaticamente');
+    }
+  }, 2000);
+});
+
+// Função para verificar manifest manualmente
+async function checkManifest() {
+  try {
+    const response = await fetch('/manifest.json');
+    const manifest = await response.json();
+    console.log('PWA: Manifest carregado:', manifest);
+
+    // Validar campos obrigatórios
+    const requiredFields = ['name', 'short_name', 'start_url', 'display', 'icons'];
+    const missingFields = requiredFields.filter(field => !manifest[field]);
+
+    if (missingFields.length > 0) {
+      console.error('PWA: Campos obrigatórios faltando no manifest:', missingFields);
+    } else {
+      console.log('PWA: ✅ Manifest parece válido');
+    }
+
+    // Verificar ícones
+    if (manifest.icons && manifest.icons.length > 0) {
+      console.log('PWA: Ícones definidos:', manifest.icons.length);
+      manifest.icons.forEach((icon, i) => {
+        console.log(`PWA: Ícone ${i + 1}:`, icon.src, icon.sizes, icon.type);
+      });
+    } else {
+      console.error('PWA: Nenhum ícone definido no manifest');
+    }
+
+  } catch (error) {
+    console.error('PWA: Erro ao carregar manifest:', error);
+  }
+}
+
+// Chamar verificação do manifest
+setTimeout(checkManifest, 1000);
+
+// Expor função global para debug
+window.checkPWAStatus = () => {
+  console.log('=== STATUS DA PWA ===');
+  console.log('deferredPrompt:', deferredPrompt);
+  console.log('isStandalone:', window.matchMedia('(display-mode: standalone)').matches);
+  console.log('userAgent:', navigator.userAgent);
+  console.log('serviceWorker support:', 'serviceWorker' in navigator);
+  console.log('beforeinstallprompt support:', 'onbeforeinstallprompt' in window);
+  checkManifest();
+};
+
+// Função de debug mais simples para console
+window.pwaDebug = () => {
+  console.log('🔍 PWA DEBUG:');
+  console.log('- Service Worker:', 'serviceWorker' in navigator ? '✅ Suportado' : '❌ Não suportado');
+  console.log('- BeforeInstallPrompt:', 'onbeforeinstallprompt' in window ? '✅ Suportado' : '❌ Não suportado');
+  console.log('- Manifest Link:', 'manifest' in document.createElement('link') ? '✅ Suportado' : '❌ Não suportado');
+  console.log('- Modo Standalone:', window.matchMedia('(display-mode: standalone)').matches ? '✅ Sim' : '❌ Não');
+  console.log('- deferredPrompt:', deferredPrompt ? '✅ Existe' : '❌ Não existe');
+
+  // Verificar service workers registrados
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.getRegistrations().then(regs => {
+      console.log('- Service Workers registrados:', regs.length);
+      regs.forEach((reg, i) => console.log(`  ${i+1}. ${reg.scope} (${reg.active ? 'ativo' : 'inativo'})`));
+    });
+  }
+
+  // Verificar manifest
+  fetch('/manifest.json').then(r => r.json()).then(m => {
+    console.log('- Manifest carregado:', m.name);
+    console.log('- Ícones:', m.icons ? m.icons.length : 0);
+  }).catch(e => console.log('- Erro no manifest:', e));
+};
