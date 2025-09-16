@@ -28,6 +28,11 @@ async function updateUserScore(delta) {
   }
 }
 
+// 🔹 Toggle menu responsivo das tabs
+document.getElementById("tabs-toggle").addEventListener("click", () => {
+  document.getElementById("tabsDropdown").classList.toggle("show");
+});
+
 
 // Função para renderizar a UI de autenticação
 function renderAuthUi(user) {
@@ -3647,7 +3652,7 @@ function renderInstrumentUI(inst) {
     body.setAttribute('stroke', '#222'); body.setAttribute('stroke-width', '3');
     svg.appendChild(body);
 
-    const letters = ['C','D','E','F','G','A','B'];
+    const letters = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
     const noteMap = { C: 'C5', D: 'D5', E: 'E5', F: 'F5', G: 'G5', A: 'A5', B: 'B5' };
 
     const startX = 140; const gap = 95; const cy = 70;
@@ -3862,7 +3867,7 @@ function buildKeyboard() {
 
       const label = document.createElement('div');
       label.className = 'note-label';
-      label.textContent = (currentInstrument === 'flute') ? `${note.replace('#','♯')}` : `${note}${octave}`;
+      label.textContent = (currentInstrument === 'flute') ? `${note.replace('#', '♯')}` : `${note}${octave}`;
       key.appendChild(label);
 
       black.appendChild(key);
@@ -4013,7 +4018,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Event listener para seletor de instrumentos (sem virtualPiano)
   document.querySelectorAll('.inst-btn').forEach(btn => {
-    btn.addEventListener('click', () => {});
+    btn.addEventListener('click', () => { });
   });
 
   // Event listeners para botões de período do ranking
@@ -4322,7 +4327,6 @@ async function completeActivity(activityId) {
     });
     userPoints += 20;
 
-    // Atualiza exibição
     const pointsElement = document.querySelector(".user-points");
     if (pointsElement) pointsElement.textContent = `${userPoints} pts`;
 
@@ -4332,7 +4336,6 @@ async function completeActivity(activityId) {
   }
 }
 
-// Helper para somar pontos adicionais (usado no Agudo/Grave)
 async function addUserPoints(amount) {
   if (!currentUser) return;
 
@@ -4370,7 +4373,6 @@ let deferredPrompt;
 
 console.log('PWA: Script carregado, verificando suporte...');
 
-// Verificar suporte básico
 console.log('PWA: Service Worker suportado:', 'serviceWorker' in navigator);
 console.log('PWA: BeforeInstallPrompt suportado:', 'onbeforeinstallprompt' in window);
 console.log('PWA: Manifest link suportado:', 'manifest' in document.createElement('link'));
@@ -4381,7 +4383,6 @@ window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
 
-  // Mostrar botão de instalação
   showInstallButton();
 });
 
@@ -4390,11 +4391,9 @@ window.addEventListener('appinstalled', (evt) => {
   console.log('PWA: Install event:', evt);
 });
 
-// Função para mostrar botão de instalação
 function showInstallButton() {
   console.log('PWA: Mostrando botão de instalação...');
 
-  // Remover botão existente se houver
   const existingBtn = document.getElementById('pwa-install-btn');
   if (existingBtn) existingBtn.remove();
 
@@ -4415,22 +4414,17 @@ function showInstallButton() {
       installBtn.remove();
     } else {
       console.log('PWA: Tentando instalação manual (fallback)');
-      // Fallback para navegadores que não suportam beforeinstallprompt
       alert('Para instalar este app:\n\n1. No Chrome: Clique no ícone de instalação na barra de endereço\n2. No Firefox: Adicione aos favoritos ou à tela inicial\n3. No Edge: Use o menu "Apps"');
     }
   });
-
-  // Efeitos de hover são controlados via CSS (#pwa-install-btn)
 
   document.body.appendChild(installBtn);
   console.log('PWA: Botão de instalação adicionado ao DOM');
 }
 
-// Verificar status da PWA
 window.addEventListener('load', () => {
   console.log('PWA: Página carregada, verificando status...');
 
-  // Verificar se está em modo standalone
   const isStandalone = window.matchMedia('(display-mode: standalone)').matches;
   console.log('PWA: Está em modo standalone:', isStandalone);
 
@@ -4440,14 +4434,12 @@ window.addEventListener('load', () => {
     console.log('PWA: App está rodando no navegador normal');
   }
 
-  // Verificar manifest
   const manifestLink = document.querySelector('link[rel="manifest"]');
   console.log('PWA: Link do manifest encontrado:', !!manifestLink);
   if (manifestLink) {
     console.log('PWA: URL do manifest:', manifestLink.href);
   }
 
-  // Verificar service worker
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(registrations => {
       console.log('PWA: Service Workers registrados:', registrations.length);
@@ -4457,7 +4449,6 @@ window.addEventListener('load', () => {
     });
   }
 
-  // Aguardar um pouco e verificar se o evento beforeinstallprompt foi disparado
   setTimeout(() => {
     console.log('PWA: Verificando se beforeinstallprompt foi disparado...');
     console.log('PWA: deferredPrompt existe:', !!deferredPrompt);
@@ -4530,7 +4521,7 @@ window.pwaDebug = () => {
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.getRegistrations().then(regs => {
       console.log('- Service Workers registrados:', regs.length);
-      regs.forEach((reg, i) => console.log(`  ${i+1}. ${reg.scope} (${reg.active ? 'ativo' : 'inativo'})`));
+      regs.forEach((reg, i) => console.log(`  ${i + 1}. ${reg.scope} (${reg.active ? 'ativo' : 'inativo'})`));
     });
   }
 
